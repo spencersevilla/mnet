@@ -21,15 +21,6 @@ void cleanup_module(void)
 
 int mhost_init(void)
 {
-    struct net_device *dev;
-    
-    /* testing here */
-    dev = first_net_device(&init_net);
-    while (dev) {
-        printk(KERN_INFO "found [%s:%d]\n", dev->name, dev->ifindex);
-        dev = next_net_device(dev);
-    }
-    
     int rc = -EINVAL;
 	printk(KERN_INFO "initializing AF_MHOST family\n");
     
