@@ -1,0 +1,31 @@
+#include "mhost_downstack.h"
+#include "mhost_upstack.h"
+
+/* master function called by L3 
+ * analagous to ip_output and ip_finish_output{2}
+ * they then call the equivalent of neigh_connected_output
+ * A LOT of arp shit happens here too!
+ * for reference: Figure 27.13
+ */
+
+int mhost_finish_output(struct sk_buff *skb, struct net_device *dev)
+{
+    int err = 0;
+    
+    printk(KERN_INFO "mhost_finish_output called\n");
+    
+    /* set device-specific header here... */
+    skb->protocol = htons(ETH_P_MHOST);
+    skb->dev = dev;
+    err = dev_hard_header(skb, dev, ntohs(skb->protocol),
+                          NULL, NULL, skb->len);
+    
+    /* ...and ship off to the device driver! */
+    if (err >= 0)
+        err = dev_queue_xmit(skb);
+    else {
+        err = -EINVAL;
+        kfree_skb(skb);
+    }
+    return err;
+}

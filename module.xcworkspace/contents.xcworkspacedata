@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:kernel_includes.h">
+   </FileRef>
+   <FileRef
+      location = "group:udp_mhost.h">
+   </FileRef>
+   <FileRef
+      location = "group:udp_mhost.c">
+   </FileRef>
+   <FileRef
+      location = "group:udp_table.h">
+   </FileRef>
+   <FileRef
+      location = "group:udp_table.c">
+   </FileRef>
+   <FileRef
+      location = "container:af_mhost.h">
+   </FileRef>
+   <FileRef
+      location = "container:af_mhost.c">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_table.h">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_table.c">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_upstack.h">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_upstack.c">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_downstack.h">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_downstack.c">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_inet.h">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_inet.c">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_testproto.h">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_testproto.c">
+   </FileRef>
+   <FileRef
+      location = "group:module_hooks.c">
+   </FileRef>
+   <FileRef
+      location = "group:Makefile">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_server.stp">
+   </FileRef>
+   <FileRef
+      location = "group:mhost_client.stp">
+   </FileRef>
+   <FileRef
+      location = "group:inet_client.stp">
+   </FileRef>
+   <FileRef
+      location = "group:inet_server.stp">
+   </FileRef>
+   <FileRef
+      location = "group:install.sh">
+   </FileRef>
+   <Group
+      location = "group:tests"
+      name = "tests">
+      <FileRef
+         location = "group:make_tests.sh">
+      </FileRef>
+      <FileRef
+         location = "group:inet_client.c">
+      </FileRef>
+      <FileRef
+         location = "group:inet_server.c">
+      </FileRef>
+      <FileRef
+         location = "group:mhost_client.c">
+      </FileRef>
+      <FileRef
+         location = "group:mhost_server.c">
+      </FileRef>
+      <FileRef
+         location = "group:inet_client.out">
+      </FileRef>
+      <FileRef
+         location = "group:inet_server.out">
+      </FileRef>
+      <FileRef
+         location = "group:mhost_client.out">
+      </FileRef>
+      <FileRef
+         location = "group:mhost_server.out">
+      </FileRef>
+   </Group>
+</Workspace>

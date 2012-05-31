@@ -1,0 +1,220 @@
+#include "af_mhost.h"
+#include "udp_mhost.h"
+#include "mhost_table.h"
+#include "udp_table.h"
+
+extern const struct net_proto_family mhost_family_ops;
+extern const struct proto_ops mhost_dgram_ops;
+
+/* udp_prot */
+struct proto udpmhost_prot = {
+    .name           = "UDPMHOST",
+    .owner          = THIS_MODULE,
+    .close          = udp_lib_close,
+    .destroy        = udp_destroy_sock,
+    .obj_size       = sizeof(struct udp_mhost_sock),
+    .slab_flags     = SLAB_DESTROY_BY_RCU,
+    .h.udp_table    = &udp_table,
+    /* huh? */
+    .hash           = udp_lib_hash,
+    .unhash         = udp_lib_unhash,
+    .memory_allocated  = &udp_memory_allocated,
+    .sysctl_mem        = sysctl_udp_mem,
+    
+    /* custom functions */
+    .sendmsg    = udpmhost_sendmsg,
+    .recvmsg    = udpmhost_recvmsg,
+    .get_port   = udp_mhost_get_port,
+};
+EXPORT_SYMBOL(udpmhost_prot);
+
+struct inet_protosw mhost_dgram_protosw = {
+    .type       = SOCK_DGRAM,
+    .protocol   = IPPROTO_UDP,
+    .prot       = &udpmhost_prot,
+    .ops        = &mhost_dgram_ops,
+    .no_check   = 0,
+    .flags      = 0,
+};
+
+struct inet_protosw fake_dgram_protosw = {
+    .type       = SOCK_DGRAM,
+    .protocol   = IPPROTO_UDP,
+    .prot       = &udp_prot,
+    .ops        = &inet_dgram_ops,
+    .no_check   = UDP_CSUM_DEFAULT,
+    .flags      = INET_PROTOSW_PERMANENT,
+};
+
+EXPORT_SYMBOL(mhost_dgram_protosw);
+
+int udpmhost_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, size_t len)
+{
+    struct mhost_sock *ms = mhost_sk(sk);
+    struct inet_sock *inet = inet_sk(sk);
+    struct sockaddr_mhost *sa;
+//    struct udp_mhost_sock *up = udp_mhost_sk(sk);
+    struct iovec *iov = msg->msg_iov;
+    struct udphdr *hdr;
+    struct sk_buff *skb;
+    int err = 0;
+    int ulen = len + sizeof(struct udphdr);
+    __be16 dport = 0;
+    unsigned char *data;
+    
+    printk(KERN_INFO "udpmhost_sendmsg called\n");
+    
+    /* shortcut for the case where L3 interacts closely with L4 
+     * NOTE: IPv4 and IPv6 both use this! */
+    if (ms->proto->udp_sendmsg) {
+        printk(KERN_INFO "SMS: calling udp_sendmsg\n");
+        err = ms->proto->udp_sendmsg(iocb, sk, msg, len);
+        if (err != len) {
+            printk(KERN_INFO "error: %d\n", err);
+        }
+        return err;
+    }
+    
+    /* early error-checking */
+    if (len > 0xFFFF)
+        return -EMSGSIZE;
+    if (msg->msg_flags & MSG_OOB)
+        return -EOPNOTSUPP;
+    
+    sa = (struct sockaddr_mhost *)msg->msg_name;
+    dport = sa->port;
+    /* NOT DONE YET!!! */
+    
+    /* create an skb and copy the udp header and payload */
+    skb = alloc_skb(UDP_MAX_HEADER + ulen, sk->sk_allocation);
+    if (unlikely(skb == NULL))
+        return -ENOBUFS;
+    skb_reserve(skb, UDP_MAX_HEADER);
+    
+    /* copy payload from userspace */
+    data = skb_put(skb, len);
+	skb->csum = csum_and_copy_from_user(iov->iov_base, data, len, 0, &err);
+	if (err) {
+//         log?
+//         free skb? 
+        return -err;
+    }
+        
+    /* generate udp header here */
+	hdr = (struct udphdr *)skb_push(skb, sizeof(struct udphdr));
+
+    hdr->source = htons(inet->inet_sport);
+    hdr->len = htons(ulen);
+    hdr->dest = htons(dport);
+    hdr->check = 0;
+        
+    /* pass packet to l3 handler */
+    lock_sock(sk);
+    err = ms->proto->sendmsg(sk, skb, ulen);
+    release_sock(sk);
+    
+    if (!err)
+        return len;
+
+    /* NOT DONE YET!!! */
+    return err;
+};
+
+int udpmhost_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, size_t len, int noblock, int flags, int *addr_len)
+{
+    struct sockaddr_mhost *sin = (struct sockaddr_mhost *)msg->msg_name;
+    struct sk_buff *skb;
+    unsigned int ulen;
+    int peeked;
+    int err;
+    int is_udplite = IS_UDPLITE(sk);
+    
+    printk(KERN_INFO "udpmhost_recvmsg called\n");
+
+    /*
+     *      Check any passed addresses
+     */
+    if (addr_len)
+        *addr_len = sizeof(*sin);
+    
+    /* if (flags & MSG_ERRQUEUE) 
+     * return mhost_recv_error(sk, msg, len) */
+    
+try_again:
+    skb = __skb_recv_datagram(sk, flags | (noblock ? MSG_DONTWAIT : 0),
+                              &peeked, &err);
+    if (!skb)
+        goto out;
+    
+    ulen = skb->len - sizeof(struct udphdr);
+    if (len > ulen)
+        len = ulen;
+    else if (len < ulen)
+        msg->msg_flags |= MSG_TRUNC;
+        
+    /* we don't support csums yet! */
+    err = skb_copy_datagram_iovec(skb, sizeof(struct udphdr),
+                                  msg->msg_iov, len);
+
+    if (err)
+        goto out_free;
+    
+    if (!peeked)
+        UDP_INC_STATS_USER(sock_net(sk),
+                           UDP_MIB_INDATAGRAMS, is_udplite);
+    
+    sock_recv_ts_and_drops(msg, sk, skb);
+    
+    if (sin) {
+        sin->sa_family = AF_MHOST;
+        sin->port = udp_hdr(skb)->source;
+        memset(sin->opaque, 0, sizeof(sin->opaque));
+    }
+//    if (inet->cmsg_flags)
+//        mhost_cmsg_recv(msg, skb);
+    
+    err = len;
+    if (flags & MSG_TRUNC)
+        err = ulen;
+    
+out_free:
+    skb_free_datagram_locked(sk, skb);
+out:
+    return err;
+};
+
+void udp_destroy_sock(struct sock *sk)
+{
+    bool slow = lock_sock_fast(sk);
+    udp_flush_pending_frames(sk);
+    unlock_sock_fast(sk, slow);
+};
+
+int udp_mhost_get_port(struct sock *sk, unsigned short snum)
+{
+    int retval = 0;
+    unsigned int hash2_nulladdr = udp4_portaddr_hash(sock_net(sk), htonl(INADDR_ANY), snum);
+    unsigned int hash2_partial = udp4_portaddr_hash(sock_net(sk), inet_sk(sk)->inet_rcv_saddr, 0);
+    
+    printk(KERN_INFO "udp_mhost_get_port called\n");
+
+    /* precompute partial secondary hash */
+    udp_sk(sk)->udp_portaddr_hash = hash2_partial;
+    retval = udp_lib_get_port(sk, snum, mhost_rcv_saddr_equal, hash2_nulladdr);
+
+    /* store udp port in a table! 
+     * note that we use the original udp get port function
+     * so that we're guaranteed that all mhost ports are also
+     * reserved and valid for INET as well 
+     */
+    if (!retval) {
+        udp_table_insert(sk, inet_sk(sk)->inet_num);
+    }
+    
+    return retval;
+}
+
+unsigned int udp4_portaddr_hash(struct net *net, __be32 saddr, unsigned int port)
+{
+    return jhash_1word((__force u32)saddr, net_hash_mix(net)) ^ port;
+}

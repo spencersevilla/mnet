@@ -1,0 +1,4 @@
+0x925b44fc	mhost_dgram_ops	/home/spencer/Desktop/mobilehost/mobile_host	(unknown)
+0x4e6948e3	udpmhost_prot	/home/spencer/Desktop/mobilehost/mobile_host	(unknown)
+0x27ccf5aa	mhost_dgram_protosw	/home/spencer/Desktop/mobilehost/mobile_host	(unknown)
+0x32b4e219	mhost_family_ops	/home/spencer/Desktop/mobilehost/mobile_host	(unknown)
