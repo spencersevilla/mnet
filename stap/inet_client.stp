@@ -1,0 +1,47 @@
+probe kernel.function("*@net/ipv4/udp.c").call {
+    if (execname() == "inet_client.out") {
+        printf ("%s -> %s\n", thread_indent(2), probefunc())
+    }
+}
+
+probe kernel.function("*@net/ipv4/udp.c").return {
+    if (execname() == "inet_client.out") {
+        printf ("%s <- %s\n", thread_indent(-2), probefunc())
+    }
+}
+
+probe kernel.function("*@net/ipv4/ip_input.c").call {
+    if (execname() == "inet_client.out") {
+        printf ("%s -> %s\n", thread_indent(2), probefunc())
+    }
+}
+
+probe kernel.function("*@net/ipv4/ip_input.c").return {
+    if (execname() == "inet_client.out") {
+        printf ("%s <- %s\n", thread_indent(-2), probefunc())
+    }
+}
+
+probe kernel.function("*@net/core/dev.c").call {
+    if (execname() == "inet_client.out") {
+        printf ("%s -> %s\n", thread_indent(2), probefunc())
+    }
+}
+
+probe kernel.function("*@net/core/dev.c").return {
+    if (execname() == "inet_client.out") {
+        printf ("%s <- %s\n", thread_indent(-2), probefunc())
+    }
+}
+
+probe kernel.function("*@net/ipv4/route.c").call {
+    if (execname() == "inet_client.out") {
+        printf ("%s -> %s\n", thread_indent(2), probefunc())
+    }
+}
+
+probe kernel.function("*@net/ipv4/route.c").return {
+    if (execname() == "inet_client.out") {
+        printf ("%s <- %s\n", thread_indent(-2), probefunc())
+    }
+}
