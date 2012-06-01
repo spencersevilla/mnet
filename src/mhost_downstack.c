@@ -21,9 +21,14 @@ int mhost_finish_output(struct sk_buff *skb, struct net_device *dev)
                           NULL, NULL, skb->len);
     
     /* ...and ship off to the device driver! */
-    if (err >= 0)
+    if (err >= 0) {
         err = dev_queue_xmit(skb);
+        if (err < 0) {
+            printk(KERN_INFO "error: dev_queue_xmit!\n");
+        }
+    }
     else {
+        printk(KERN_INFO "error: dev_hard_header!\n");
         err = -EINVAL;
         kfree_skb(skb);
     }
