@@ -28,9 +28,6 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
 {
     struct testhdr *hdr;
     struct net_device *dev = NULL;
-    struct net_device *dev2 = NULL;
-    struct sk_buff *skb2 = NULL;
-    int retval = 0;
     
     printk(KERN_INFO "test_mhost_sendmsg called\n");
     
