@@ -44,7 +44,7 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
     hdr->family = AF_TESTPROTO;
     hdr->ones = 0xFFFF;
     
-    printk(KERN_INFO "sending to: [%x:%s]\n", dev, dev->name);
+    printk(KERN_INFO "sending to: [%p:%s]\n", dev, dev->name);
 
     /* send down the stack! */
     return mhost_finish_output(skb, dev);

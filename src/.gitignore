@@ -5,6 +5,3 @@
 *.mod
 *.symvers
 *.mod.c
-
-# Everything Distro-Specific
-local/*

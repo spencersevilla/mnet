@@ -1,0 +1,2 @@
+/home/spencer/Desktop/mnet/src/mobile_host.ko
+/home/spencer/Desktop/mnet/src/module_hooks.o /home/spencer/Desktop/mnet/src/af_mhost.o /home/spencer/Desktop/mnet/src/udp_mhost.o /home/spencer/Desktop/mnet/src/mhost_table.o /home/spencer/Desktop/mnet/src/mhost_inet.o /home/spencer/Desktop/mnet/src/mhost_upstack.o /home/spencer/Desktop/mnet/src/mhost_downstack.o /home/spencer/Desktop/mnet/src/mhost_testproto.o /home/spencer/Desktop/mnet/src/udp_table.o

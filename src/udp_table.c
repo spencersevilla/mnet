@@ -9,7 +9,7 @@ struct udp_table_entry {
 static struct udp_table_entry *head = NULL;
 
 static struct udp_table_entry * udp_table_get_entry_by_port(int port);
-static struct udp_table_entry * udp_table_get_entry_by_sk(struct sock *sk);
+//static struct udp_table_entry * udp_table_get_entry_by_sk(struct sock *sk);
 
 /* lookup function */
 struct sock * udp_table_lookup(int port)
@@ -150,16 +150,16 @@ static struct udp_table_entry * udp_table_get_entry_by_port(int port)
     return answer;
 };
 
-static struct udp_table_entry * udp_table_get_entry_by_sk(struct sock *sk)
-{
-    struct udp_table_entry *answer = head;
-    while (answer) {
-        if (sk == answer->sk) {
-            break;
-        }
-        
-        answer = answer->next;
-    }
-    
-    return answer;
-};
+//static struct udp_table_entry * udp_table_get_entry_by_sk(struct sock *sk)
+//{
+//    struct udp_table_entry *answer = head;
+//    while (answer) {
+//        if (sk == answer->sk) {
+//            break;
+//        }
+//        
+//        answer = answer->next;
+//    }
+//    
+//    return answer;
+//};
