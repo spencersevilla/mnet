@@ -1,1 +1,0 @@
-cmd_/home/spencer/Desktop/mnet/src/mobile_host.ko := ld -r -m elf_i386 -T /usr/src/linux-headers-3.2.0-24-generic-pae/scripts/module-common.lds --build-id  -o /home/spencer/Desktop/mnet/src/mobile_host.ko /home/spencer/Desktop/mnet/src/mobile_host.o /home/spencer/Desktop/mnet/src/mobile_host.mod.o
