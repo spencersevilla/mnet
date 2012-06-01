@@ -28,37 +28,29 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
 {
     struct testhdr *hdr;
     struct net_device *dev = NULL;
+    struct net_device *dev2 = NULL;
+    struct sk_buff *skb2 = NULL;
     int retval = 0;
     
     printk(KERN_INFO "test_mhost_sendmsg called\n");
     
     /* do routing work to find a device
      * (here, just hard-coded to use loopback) */
-//    dev = dev_get_by_index(sock_net(sk), 1);
-//    if (!dev) {
-//        printk(KERN_INFO "error: dev not found!\n");
-//        dev = (sock_net(sk))->loopback_dev;
-//    }
+    dev = dev_get_by_index(sock_net(sk), 1);
+    if (!dev) {
+        printk(KERN_INFO "error: dev not found!\n");
+        dev = (sock_net(sk))->loopback_dev;
+    }
     
     /* build header */
     hdr = (struct testhdr *)skb_push(skb, sizeof(struct testhdr));
     hdr->family = AF_TESTPROTO;
     hdr->ones = 0xFFFF;
     
+    printk(KERN_INFO "sending to: [%x:%s]\n", dev, dev->name);
+
     /* send down the stack! */
-//    return mhost_finish_output(skb, dev);
-    
-    /* loop to send to EACH INTERFACE! */
-    dev = first_net_device(&init_net);
-    while (dev) {
-        printk(KERN_INFO "sending to: [%s]\n", dev->name);
-        skb_get(skb);
-        retval = mhost_finish_output(skb, dev);
-        dev = next_net_device(dev);
-    }
-    
-    kfree(skb);
-    return retval;
+    return mhost_finish_output(skb, dev);
 };
 
 int test_mhost_rcv(struct sk_buff *skb, struct net_device *dev, 

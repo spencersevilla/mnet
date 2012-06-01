@@ -12,11 +12,15 @@ struct packet_type mhost_ptype = {
     .gro_complete = mhost_gro_complete,
 };
 
+struct l3_hdr {
+    short family;
+};
+
 /* master function called by L2 */
 int mhost_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, struct net_device *orig_dev)
 {
     struct mhost_proto *mp;
-    short family;
+    struct l3_hdr *hdr;
     
     printk(KERN_INFO "mhost_rcv called\n");
     
@@ -26,8 +30,8 @@ int mhost_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *p
     
     /* address family MUST be first member of L3 header 
      * so that we can quickly perform a table lookup on it.*/
-    family = (short) *(skb->network_header);
-    mp = mhost_proto_for_family(family);
+    hdr = (struct l3_hdr *)(skb->network_header);
+    mp = mhost_proto_for_family(hdr->family);
 
     /* ...and pass it up the stack! */
     if (mp && mp->rcv) {
@@ -35,7 +39,7 @@ int mhost_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *p
         return 0;
     }
     
-    printk(KERN_INFO "error: no L3 handler registered! family=%x\n", family);
+    printk(KERN_INFO "error: no L3 handler registered! family=%x\n", hdr->family);
     return -EAFNOSUPPORT;
 }
 
