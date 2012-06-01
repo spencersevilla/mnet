@@ -1,4 +1,8 @@
 #!/bin/bash
 
+cd src
+make
 sudo insmod mobile_host.ko
-./tests/make_tests.sh
+cd ../tests
+./make_tests.sh
+
