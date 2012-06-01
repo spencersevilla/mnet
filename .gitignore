@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 mnet.xcworkspace/xcuserdata/spencer.xcuserdatad/UserInterfaceState.xcuserstate
 
@@ -58,3 +59,11 @@ src/udp_table.o
 src/udp_mhost.o
 
 .DS_Store
+=======
+# Object files
+*.o
+*.ko
+
+# Everything Distro-Specific
+local/*
+>>>>>>> working
