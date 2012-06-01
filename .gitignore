@@ -5,6 +5,7 @@
 *.mod
 *.symvers
 *.mod.c
+.DS_Store
 
 # Everything Distro-Specific
 local/*
