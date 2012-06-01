@@ -33,7 +33,7 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
     
     /* do routing work to find a device
      * (here, just hard-coded to use wlan0) */
-    dev = dev_get_by_index(sock_net(sk), 2);
+    dev = dev_get_by_index(sock_net(sk), 3);
     if (!dev) {
         printk(KERN_INFO "error: dev not found!\n");
         dev = (sock_net(sk))->loopback_dev;
@@ -47,7 +47,8 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
     printk(KERN_INFO "sending to: [%p:%s]\n", dev, dev->name);
 
     /* send down the stack! */
-    return mhost_finish_output(skb, dev);
+    /* NOTE: dst must be set if you want to use an actual interface! */
+    return mhost_finish_output(skb, dev, dev->dev_addr);
 };
 
 int test_mhost_rcv(struct sk_buff *skb, struct net_device *dev, 

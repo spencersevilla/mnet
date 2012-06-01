@@ -8,7 +8,7 @@
  * for reference: Figure 27.13
  */
 
-int mhost_finish_output(struct sk_buff *skb, struct net_device *dev)
+int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void *daddr)
 {
     int err = 0;
     

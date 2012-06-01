@@ -12,6 +12,6 @@
 #include "kernel_includes.h"
 
 /* downstack */
-int mhost_finish_output(struct sk_buff *skb, struct net_device *dev);
+int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void *daddr);
 
 #endif
