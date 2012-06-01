@@ -28,7 +28,7 @@ int mhost_finish_output(struct sk_buff *skb, struct net_device *dev)
         }
     }
     else {
-        printk(KERN_INFO "error: dev_hard_header!\n");
+        printk(KERN_INFO "error: dev_hard_header returned %d\n", err);
         err = -EINVAL;
         kfree_skb(skb);
     }
