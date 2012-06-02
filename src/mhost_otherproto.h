@@ -9,7 +9,7 @@
 #ifndef _mhost_otherproto_h
 #define _mhost_otherproto_h
 
-#define AF_OTHERPROTO 2
+#define AF_OTHERPROTO 3
 
 #include "kernel_includes.h"
 
