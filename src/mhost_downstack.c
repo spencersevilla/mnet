@@ -18,7 +18,7 @@ int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void 
     skb->protocol = htons(ETH_P_MHOST);
     skb->dev = dev;
     err = dev_hard_header(skb, dev, ntohs(skb->protocol),
-                          NULL, NULL, skb->len);
+                          daddr, NULL, skb->len);
     
     /* ...and ship off to the device driver! */
     if (err >= 0) {

@@ -13,6 +13,8 @@ struct mhost_proto test_mhost_proto = {
     .rcv            = test_mhost_rcv,
 };
 
+char baddr[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
+
 /* function called when module initialized */
 int test_mhost_init(void)
 {
@@ -48,7 +50,7 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
 
     /* send down the stack! */
     /* NOTE: dst must be set if you want to use an actual interface! */
-    return mhost_finish_output(skb, dev, dev->dev_addr);
+    return mhost_finish_output(skb, dev, baddr);
 };
 
 int test_mhost_rcv(struct sk_buff *skb, struct net_device *dev, 
