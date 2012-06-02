@@ -13,8 +13,6 @@ struct mhost_proto test_mhost_proto = {
     .rcv            = test_mhost_rcv,
 };
 
-char baddr[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-
 /* function called when module initialized */
 int test_mhost_init(void)
 {

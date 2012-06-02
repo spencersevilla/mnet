@@ -13,13 +13,11 @@ struct mhost_proto other_mhost_proto = {
     .rcv            = other_mhost_rcv,
 };
 
-char baddr[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
-
 /* function called when module initialized */
 int other_mhost_init(void)
 {
-    printk(KERN_INFO "test_mhost_init called\n");
-    mhost_table_register(&test_mhost_proto);
+    printk(KERN_INFO "other_mhost_init called\n");
+    mhost_table_register(&other_mhost_proto);
     
     /* initialize any specific routing table stuff here */
     
@@ -28,10 +26,10 @@ int other_mhost_init(void)
 
 int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
 {
-    struct testhdr *hdr;
+    struct otherhdr *hdr;
     struct net_device *dev = NULL;
     
-    printk(KERN_INFO "test_mhost_sendmsg called\n");
+    printk(KERN_INFO "other_mhost_sendmsg called\n");
     
     /* do routing work to find a device
      * (here, just hard-coded to use wlan0) */
@@ -42,9 +40,9 @@ int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
     }
     
     /* build header */
-    hdr = (struct testhdr *)skb_push(skb, sizeof(struct testhdr));
-    hdr->family = AF_TESTPROTO;
-    hdr->ones = 0x0000;
+    hdr = (struct otherhdr *)skb_push(skb, sizeof(struct otherhdr));
+    hdr->family = AF_OTHERPROTO;
+    hdr->zeroes = 0x0000;
     
     printk(KERN_INFO "sending to: [%p:%s]\n", dev, dev->name);
     
@@ -56,15 +54,15 @@ int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
 int other_mhost_rcv(struct sk_buff *skb, struct net_device *dev, 
                    struct net_device *orig_dev)
 {
-    struct testhdr *hdr;
+    struct otherhdr *hdr;
     
-    printk(KERN_INFO "test_mhost_rcv called\n");
+    printk(KERN_INFO "other_mhost_rcv called\n");
     
     /* preserve network_header location */
-    skb_pull(skb, sizeof(struct testhdr));
-    hdr = (struct testhdr *) skb->network_header;
+    skb_pull(skb, sizeof(struct otherhdr));
+    hdr = (struct otherhdr *) skb->network_header;
     
-    if (hdr->ones != 0x0000) {
+    if (hdr->zeroes != 0x0000) {
         printk(KERN_INFO "error: hdr->ones not all ones!\n");
     }
     

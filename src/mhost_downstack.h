@@ -14,4 +14,6 @@
 /* downstack */
 int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void *daddr);
 
+extern char baddr[6];
+
 #endif
