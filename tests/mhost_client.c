@@ -7,7 +7,7 @@
 
 #define AF_MHOST 27
 #define AF_TESTPROTO 1
-#define AF_OTHERPROTO 2
+#define AF_OTHERPROTO 3
 
 int main(int argc, char**argv)
 {

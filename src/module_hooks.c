@@ -4,6 +4,7 @@
 #include "mhost_inet.h"
 #include "mhost_upstack.h"
 #include "mhost_testproto.h"
+#include "mhost_otherproto.h"
 #include "kernel_includes.h"
 
 int init_module(void)
@@ -35,9 +36,9 @@ int mhost_init(void)
     
     /* my table functions here */
     mhost_table_register(&inet_mhost_proto);
-    
     test_mhost_init();
-        
+    other_mhost_init();
+
     rc = 0;
 out:
     return rc;
