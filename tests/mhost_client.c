@@ -7,6 +7,7 @@
 
 #define AF_MHOST 27
 #define AF_TESTPROTO 1
+#define AF_OTHERPROTO 2
 
 int main(int argc, char**argv)
 {
@@ -26,7 +27,11 @@ int main(int argc, char**argv)
     printf("fd: %d\n", sockfd);
 
     retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
-    printf("sendto returned: %d\n", retval);
+    printf("sendto AF_TESTPROTO returned: %d\n", retval);
+
+    servaddr.sin_family = AF_OTHERPROTO;
+    retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
+    printf("sendto AF_OTHERPROTO returned: %d\n", retval);
     
     retval = close(sockfd);
     
