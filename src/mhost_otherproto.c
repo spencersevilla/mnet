@@ -24,21 +24,23 @@ int other_mhost_init(void)
     return 0;
 }
 
-int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr_mhost *sa, int len)
+int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr *sa, int len)
 {
     struct otherhdr *hdr;
     struct net_device *dev = NULL;
+    char *daddr;
+    struct sockaddr_mhost *sm = (struct sockaddr_mhost *)sa;
     
-    printk(KERN_INFO "other_mhost_sendmsg called\n");
+    printk(KERN_INFO "test_mhost_sendmsg called\n");
     
     /* do routing work to find a device */
-    if (sa->sa_family != AF_TESTPROTO) {
+    if (sm->sa_family != AF_TESTPROTO) {
         printk(KERN_INFO "error: wrong sockaddr type!\n");
         return -1;
     }
     
     /* really intelligent routing! */
-    if (sa->id_no == 0) {
+    if (sm->id_no == 0) {
         dev = (sock_net(sk))->loopback_dev;
         daddr = NULL;
     } else {
@@ -47,12 +49,13 @@ int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr_mh
             printk(KERN_INFO "error: dev not found!\n");
             dev = (sock_net(sk))->loopback_dev;
         }
-        if (sa->id_no == 1) {
+        if (sm->id_no == 1) {
             daddr = daddr1;
         } else {
             daddr = daddr2;
         }
     }
+
     
     /* build header */
     hdr = (struct otherhdr *)skb_push(skb, sizeof(struct otherhdr));

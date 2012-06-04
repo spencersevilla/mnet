@@ -26,7 +26,7 @@ struct mhost_proto {
     int (*udp_sendmsg) (struct kiocb *iocb, struct sock *sk,
                             struct msghdr *msg, size_t len);
     int (*sendmsg) (struct sock *sk, struct sk_buff *skb, 
-                    struct sockaddr_mhost *sa, int len);
+                    struct sockaddr *sa, int len);
     int (*rcv) (struct sk_buff *skb, struct net_device *dev, 
                     struct net_device *orig_dev);
 };
