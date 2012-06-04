@@ -28,15 +28,34 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
 {
     struct testhdr *hdr;
     struct net_device *dev = NULL;
+    struct sockaddr_mhost *sa;
+    char *daddr;
     
     printk(KERN_INFO "test_mhost_sendmsg called\n");
     
     /* do routing work to find a device
      * (here, just hard-coded to use wlan0) */
-    dev = dev_get_by_index(sock_net(sk), 3);
-    if (!dev) {
-        printk(KERN_INFO "error: dev not found!\n");
+    sa = (struct sockaddr_mhost *)msg->msg_name;
+    if (sa->sa_family != AF_TESTPROTO) {
+        printk(KERN_INFO "error: wrong sockaddr type!\n");
+        return -1;
+    }
+    
+    /* really intelligent routing! */
+    if (sa->id_no == 0) {
         dev = (sock_net(sk))->loopback_dev;
+        daddr = NULL;
+    } else {
+        dev = dev_get_by_index(sock_net(sk), 3);
+        if (!dev) {
+            printk(KERN_INFO "error: dev not found!\n");
+            dev = (sock_net(sk))->loopback_dev;
+        }
+        if (sa->id_no == 1) {
+            daddr = daddr1;
+        } else {
+            daddr = daddr2;
+        }
     }
     
     /* build header */
@@ -48,7 +67,7 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
 
     /* send down the stack! */
     /* NOTE: dst must be set if you want to use an actual interface! */
-    return mhost_finish_output(skb, dev, baddr);
+    return mhost_finish_output(skb, dev, daddr);
 };
 
 int test_mhost_rcv(struct sk_buff *skb, struct net_device *dev, 

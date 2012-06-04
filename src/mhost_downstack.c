@@ -11,6 +11,11 @@
 /* 802.11 broadcast address... useful to have lying around! */
 char baddr[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
 
+/* SMS: remove later, these for testing! */
+char daddr1[6] = {0x20, 0x10, 0x7a, 0x0b, 0x48, 0x65};
+char daddr2[6] = {0x20, 0x10, 0x7a, 0x0b, 0x48, 0x84};
+/* (end remove) */
+
 int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void *daddr)
 {
     int err = 0;

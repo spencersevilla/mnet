@@ -15,5 +15,7 @@
 int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void *daddr);
 
 extern char baddr[6];
+extern char daddr1[6];
+extern char daddr2[6];
 
 #endif
