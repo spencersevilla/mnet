@@ -34,7 +34,7 @@ int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr *s
     printk(KERN_INFO "test_mhost_sendmsg called\n");
     
     /* do routing work to find a device */
-    if (sm->sa_family != AF_TESTPROTO) {
+    if (sm->sa_family != AF_OTHERPROTO) {
         printk(KERN_INFO "error: wrong sockaddr type!\n");
         return -1;
     }

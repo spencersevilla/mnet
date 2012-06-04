@@ -110,7 +110,7 @@ int udpmhost_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, si
         
     /* pass packet to l3 handler */
     lock_sock(sk);
-    err = ms->proto->sendmsg(sk, skb, sa, ulen);
+    err = ms->proto->sendmsg(sk, skb, (struct sockaddr *)sa, ulen);
     release_sock(sk);
     
     if (!err)
