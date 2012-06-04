@@ -237,7 +237,7 @@ static int mhost_translate_insert(struct l3_binding *binding)
     struct l3_binding *ptr = table_head;
     struct l3_binding *nxt = NULL;
     
-    if (head == NULL) {
+    if (table_head == NULL) {
         /* just in case list was uninitialized */
         return mhost_translate_init(binding);
     }

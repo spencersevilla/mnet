@@ -38,7 +38,6 @@ int mhost_init(void)
     mhost_table_register(&inet_mhost_proto);
     test_mhost_init();
     other_mhost_init();
-    table_sim_init();
     
     /* this function populates a-priori knowledge of rts */
     table_sim_init();
