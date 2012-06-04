@@ -36,6 +36,8 @@ int mhost_table_lookup(struct sockaddr *sa, struct sock *sk)
     struct sockaddr_mhost *ma;
     struct l3_addr *addr;
     
+    printk(KERN_INFO "called mhost_table_lookup\n");
+    
     /* we have no way of ID'ing what's in this sockaddr! */
     if (sa->sa_family == AF_UNSPEC) {
         printk(KERN_INFO "error: cannot read AF_UNSPEC\n");
@@ -201,6 +203,8 @@ static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma)
      */
     struct l3_binding *bind;
     
+    printk(KERN_INFO "called translate_af_mhost\n");
+
     bind = binding_from_id(ma->id_no);
     if (bind) {
         return bind->l3_head;
@@ -274,6 +278,7 @@ static int insert_sockaddr_id(struct sockaddr *sa, short id)
     struct mhost_proto *mp;
     struct l3_addr *entry;
     struct l3_binding *binding;
+    printk(KERN_INFO "called insert_sockaddr_id\n");
     
     mp = mhost_proto_for_family(sa->sa_family);
     if (!mp) {
@@ -291,6 +296,7 @@ static int insert_sockaddr_id(struct sockaddr *sa, short id)
     
     if (!binding) {
         /* create a suitable binding here! */
+        printk(KERN_INFO "creating binding for id:%d\n", id);
         binding = kmalloc(sizeof(struct l3_binding), GFP_KERNEL);
         binding->id = id;
         binding->l3_head = NULL;
@@ -326,9 +332,9 @@ static int binding_insert_addr(struct l3_binding *binding, struct l3_addr *entry
 /* my hardcoded a-priori knowledge for demo! */
 int table_sim_init()
 {
-    /* computer "0" only does AF_OTHERPROTO
-     * computer "1" only does AF_TESTPROTO
-     * computer "2" does both! 
+    /* computer "1" only does AF_TESTPROTO
+     * computer "2" only does AF_OTHERPROTO
+     * computer "3" does both! 
      * note that i'm using sockaddr_mhost just so that
      * i can enter in a port number here without any problems
      */
@@ -342,12 +348,12 @@ int table_sim_init()
     other.port = htons(8080);
 
     
-    insert_sockaddr_id((struct sockaddr *) &other, 0);
-    
     insert_sockaddr_id((struct sockaddr *) &test, 1);
-    
+
     insert_sockaddr_id((struct sockaddr *) &other, 2);
-    insert_sockaddr_id((struct sockaddr *) &test, 2);
+    
+    insert_sockaddr_id((struct sockaddr *) &other, 3);
+    insert_sockaddr_id((struct sockaddr *) &test, 3);
     
     return 0;
 }
