@@ -24,19 +24,34 @@ int other_mhost_init(void)
     return 0;
 }
 
-int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len)
+int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr_mhost *sa, int len)
 {
     struct otherhdr *hdr;
     struct net_device *dev = NULL;
     
     printk(KERN_INFO "other_mhost_sendmsg called\n");
     
-    /* do routing work to find a device
-     * (here, just hard-coded to use wlan0) */
-    dev = dev_get_by_index(sock_net(sk), 3);
-    if (!dev) {
-        printk(KERN_INFO "error: dev not found!\n");
+    /* do routing work to find a device */
+    if (sa->sa_family != AF_TESTPROTO) {
+        printk(KERN_INFO "error: wrong sockaddr type!\n");
+        return -1;
+    }
+    
+    /* really intelligent routing! */
+    if (sa->id_no == 0) {
         dev = (sock_net(sk))->loopback_dev;
+        daddr = NULL;
+    } else {
+        dev = dev_get_by_index(sock_net(sk), 3);
+        if (!dev) {
+            printk(KERN_INFO "error: dev not found!\n");
+            dev = (sock_net(sk))->loopback_dev;
+        }
+        if (sa->id_no == 1) {
+            daddr = daddr1;
+        } else {
+            daddr = daddr2;
+        }
     }
     
     /* build header */

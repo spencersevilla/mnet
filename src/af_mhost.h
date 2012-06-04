@@ -25,7 +25,8 @@ struct mhost_proto {
     /* IPv4/IPv6 hook-in wrapper */
     int (*udp_sendmsg) (struct kiocb *iocb, struct sock *sk,
                             struct msghdr *msg, size_t len);
-    int (*sendmsg) (struct sock *sk, struct sk_buff *skb, int len);
+    int (*sendmsg) (struct sock *sk, struct sk_buff *skb, 
+                    struct sockaddr_mhost *sa, int len);
     int (*rcv) (struct sk_buff *skb, struct net_device *dev, 
                     struct net_device *orig_dev);
 };
