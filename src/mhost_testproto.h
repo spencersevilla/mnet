@@ -14,7 +14,7 @@ struct testhdr {
 };
 
 int test_mhost_init(void);
-int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, int len);
+int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr_mhost *sa, int len);
 int test_mhost_rcv(struct sk_buff *skb, struct net_device *dev, struct net_device *orig_dev);
 
 #endif
