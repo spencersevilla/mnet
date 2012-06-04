@@ -12,7 +12,8 @@
 struct sockaddr_mhost {
     short           sa_family;
     unsigned short  port;
-    char            opaque[12];
+    unsigned short  id_no;
+    char            opaque[10];
 };
 
 /* kernel-level exposed */

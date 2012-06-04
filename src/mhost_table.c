@@ -1,17 +1,49 @@
 #include "mhost_table.h"
 #include "mhost_inet.h"
+#include "mhost_testproto.h"
+#include "mhost_otherproto.h"
 
 static int mhost_table_af_specified(struct sockaddr *sa, struct sock *sk);
 
+static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma);
+static struct l3_binding * binding_from_id(short id);
+static int mhost_translate_init(struct l3_binding *binding);
+static int mhost_translate_insert(struct l3_binding *binding);
+static int insert_sockaddr_id(struct sockaddr *sa, short id);
+static int binding_insert_addr(struct l3_binding *binding, struct l3_addr *entry);
+
 static struct mhost_proto *head;
+
+/* internal structs for table lookups */
+struct l3_addr {
+    struct l3_addr *next;   /* linked-list */
+    struct mhost_proto *mp; /* has short family as first member! */
+    struct sockaddr addr;  /* l3-specific valid address */
+};
+
+struct l3_binding {
+    short id;                   /* needed until we do getaddrinfo */
+    struct l3_binding *next;    /* linked-list */
+    struct l3_addr *l3_head;    /* head of l3 address list */
+};
+
+static struct l3_binding *table_head = NULL;
 
 /* entry function */
 int mhost_table_lookup(struct sockaddr *sa, struct sock *sk)
 {
-//    struct mhost_sock *ms = mhost_sk(sk);
+    struct mhost_sock *ms = mhost_sk(sk);
+    struct sockaddr_mhost *ma;
+    struct l3_addr *addr;
+    
+    /* we have no way of ID'ing what's in this sockaddr! */
+    if (sa->sa_family == AF_UNSPEC) {
+        printk(KERN_INFO "error: cannot read AF_UNSPEC\n");
+        return -EAFNOSUPPORT;
+    }
     
     /* check if an AF (such as AF_INET) is specified explicitly */
-    if (sa->sa_family != AF_MHOST && sa->sa_family != AF_UNSPEC) {
+    if (sa->sa_family != AF_MHOST) {
         return mhost_table_af_specified(sa, sk);
     }
     
@@ -20,8 +52,38 @@ int mhost_table_lookup(struct sockaddr *sa, struct sock *sk)
      * in addition to finding the right handler!
      */
     
-    /* not implemented yet, so just return an error */
-    return -1;
+    /* step one: perform lookup on (and/or validate) AF_MHOST pointer.
+     * this must be fixed, but in the meanwhile we're using the AF_MHOST
+     * quantity as a unique identifier of a node.
+     */
+    ma = (struct sockaddr_mhost *) sa;
+    addr = translate_af_mhost(ma);
+    
+    
+    /* step two: perform any/all sanitation/validation checks and copy
+     * all necessary quantities over before returning.
+     */
+    if (!addr) {
+        printk(KERN_INFO "error: mhost node name not found!\n");
+        return -EAFNOSUPPORT;
+    }
+
+    /* go through the loop: if one l3_addr doesn't have sufficient information,
+     * then see if we can find a suitable alternative. If none exist, return bad
+     */
+    while (addr->mp == NULL) {
+        addr = addr->next;
+        if (!addr) {
+            printk(KERN_INFO "error: no acceptable l3_addr struct!\n");
+            return -EAFNOSUPPORT;
+        }
+    }
+    
+    /* so: if we get here, we've got all the info we need for translation! */
+    ms->proto = addr->mp;
+    memcpy(&addr->addr, sa, sizeof(struct sockaddr));
+    
+    return 0;
 };
 
 /*  here, we know that an address family has been explicitly named
@@ -124,4 +186,168 @@ int mhost_table_register(struct mhost_proto *proto)
     
     /* should never get here? */
     return -1;
+}
+
+/* here the following functions all branch from translate_af_mhost
+ * which is the major entry-point for returning a coherent l3_addr
+ * structure! this is the meat of what AF_MHOST is meant to do.
+ */
+static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma)
+{
+    /* ALL this function has to do is find the appropriate l3_binding
+     * and then return the l3 list head! Integrity is checked 
+     * back in the original calling function the addr is actually
+     * chosen... in a way, you could say this is similar to getaddrinfo()!
+     */
+    struct l3_binding *bind;
+    
+    bind = binding_from_id(ma->id_no);
+    if (bind) {
+        return bind->l3_head;
+    }
+    
+    return NULL;
+}
+
+static struct l3_binding * binding_from_id(short id)
+{
+    struct l3_binding *bind;
+    for (bind = table_head; bind; bind = bind->next) {
+        if (bind->id == id) {
+            break;
+        }
+    }
+    
+    return bind;
+}
+
+static int mhost_translate_init(struct l3_binding *binding)
+{
+    table_head = binding;
+    binding->next = NULL;
+    return 0;
+}
+
+static int mhost_translate_insert(struct l3_binding *binding)
+{
+    struct l3_binding *ptr = table_head;
+    struct l3_binding *nxt = NULL;
+    
+    if (head == NULL) {
+        /* just in case list was uninitialized */
+        return mhost_translate_init(binding);
+    }
+    
+    /* case where we have a new list head */
+    if (binding->id < table_head->id) {
+        binding->next = table_head;
+        table_head = binding;
+        return 0;
+    }
+    
+    do {
+        nxt = ptr->next;
+        
+        /* insert proto between ptr and nxt 
+         * this code also works for when nxt is NULL (EOL)
+         */
+        if (!nxt || binding->id < nxt->id) {
+            if (binding->id == ptr->id) {
+                /* ERROR: protocol already registered! */
+                return -1;
+            }
+            ptr->next = binding;
+            binding->next = nxt;
+            return 0;
+        }
+        
+        ptr = nxt;
+    } while (1);
+    
+    /* should never get here? */
+    return -1;
+}
+
+static int insert_sockaddr_id(struct sockaddr *sa, short id)
+{
+    /* first, create l3_addr struct info */
+    struct mhost_proto *mp;
+    struct l3_addr *entry;
+    struct l3_binding *binding;
+    
+    mp = mhost_proto_for_family(sa->sa_family);
+    if (!mp) {
+        printk(KERN_INFO "error: mhost proto not supported!\n");
+        return -1;
+    }
+    
+    entry = kmalloc(sizeof(struct l3_addr), GFP_KERNEL);
+    entry->mp = mp;
+    memcpy(&(entry->addr), sa, sizeof(struct sockaddr));
+    entry->next = NULL;
+    
+    /* now check for an l3 binding, create one if none exist */
+    binding = binding_from_id(id);
+    
+    if (!binding) {
+        /* create a suitable binding here! */
+        binding = kmalloc(sizeof(struct l3_binding), GFP_KERNEL);
+        binding->id = id;
+        binding->l3_head = NULL;
+        mhost_translate_insert(binding);
+    }
+    
+    return binding_insert_addr(binding, entry);
+}
+
+/* there's no real reason to organize this list at all
+ * so we just add the address to the end of it! */
+static int binding_insert_addr(struct l3_binding *binding, struct l3_addr *entry)
+{
+    struct l3_addr *ptr;
+    ptr = binding->l3_head;
+    
+    /* case where no active bindings exist...
+     * this should never happen, but just-in-case! */
+    if (ptr == NULL) {
+        binding->l3_head = entry;
+        return 0;
+    }
+    
+    /* move down the list to get to the end of it */
+    while (ptr->next) {
+        ptr = ptr->next;
+    }
+    ptr->next = entry;
+    entry->next = NULL;
+    return 0;
+}
+
+/* my hardcoded a-priori knowledge for demo! */
+int table_sim_init()
+{
+    /* computer "0" only does AF_OTHERPROTO
+     * computer "1" only does AF_TESTPROTO
+     * computer "2" does both! 
+     * note that i'm using sockaddr_mhost just so that
+     * i can enter in a port number here without any problems
+     */
+
+    struct sockaddr_mhost test;
+    struct sockaddr_mhost other;
+    
+    test.sa_family = AF_TESTPROTO;
+    test.port = htons(8080);
+    other.sa_family = AF_OTHERPROTO;
+    other.port = htons(8080);
+
+    
+    insert_sockaddr_id((struct sockaddr *) &other, 0);
+    
+    insert_sockaddr_id((struct sockaddr *) &test, 1);
+    
+    insert_sockaddr_id((struct sockaddr *) &other, 2);
+    insert_sockaddr_id((struct sockaddr *) &test, 2);
+    
+    return 0;
 }

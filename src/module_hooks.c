@@ -39,6 +39,9 @@ int mhost_init(void)
     test_mhost_init();
     other_mhost_init();
 
+    /* this function populates a-priori knowledge of rts */
+    table_sim_init();
+    
     rc = 0;
 out:
     return rc;
