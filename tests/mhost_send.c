@@ -20,7 +20,7 @@ int main(int argc, char**argv)
 {
     int sockfd, retval;
     struct sockaddr_mhost addr;
-    char sendline[] = "hello111";
+    char sendline[] = "hello";
     
     /* info here */
     addr.sa_family = AF_MHOST;

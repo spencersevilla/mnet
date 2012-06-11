@@ -83,7 +83,7 @@ int mhost_table_lookup(struct sockaddr *sa, struct sock *sk)
     
     /* so: if we get here, we've got all the info we need for translation! */
     ms->proto = addr->mp;
-    memcpy(&addr->addr, sa, sizeof(struct sockaddr));
+    memcpy(sa, &addr->addr, sizeof(struct sockaddr));
     
     return 0;
 };
