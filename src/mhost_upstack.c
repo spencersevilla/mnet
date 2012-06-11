@@ -72,6 +72,9 @@ int udp_mhost_rcv(struct sk_buff *skb)
     uh = (struct udphdr *) skb_transport_header(skb);
     ulen = ntohs(uh->len);
     
+    // SMS: FIND A BETTER FIX FOR THIS!!!
+    skb->len = ulen;
+    
     // eh?
     saddr = 0;
     daddr = 0;
