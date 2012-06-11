@@ -41,6 +41,7 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr *sa
     
     /* really intelligent routing! */
     if (sm->id_no == 0) {
+        printk(KERN_INFO "id_no == 0\n");
         dev = (sock_net(sk))->loopback_dev;
         daddr = NULL;
     } else {

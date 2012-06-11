@@ -31,7 +31,7 @@ int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr *s
     char *daddr;
     struct sockaddr_mhost *sm = (struct sockaddr_mhost *)sa;
     
-    printk(KERN_INFO "test_mhost_sendmsg called\n");
+    printk(KERN_INFO "other_mhost_sendmsg called\n");
     
     /* do routing work to find a device */
     if (sm->sa_family != AF_OTHERPROTO) {
@@ -41,6 +41,7 @@ int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr *s
     
     /* really intelligent routing! */
     if (sm->id_no == 0) {
+        printk(KERN_INFO "id_no == 0\n");
         dev = (sock_net(sk))->loopback_dev;
         daddr = NULL;
     } else {
