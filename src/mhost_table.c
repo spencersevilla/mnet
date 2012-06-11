@@ -347,11 +347,14 @@ int table_sim_init()
     other.sa_family = AF_OTHERPROTO;
     other.port = htons(8080);
 
-    
+    test.id_no = 1;    
     insert_sockaddr_id((struct sockaddr *) &test, 1);
 
+    other.id_no = 2;    
     insert_sockaddr_id((struct sockaddr *) &other, 2);
     
+    test.id_no = 3;
+    other.id_no = 3;
     insert_sockaddr_id((struct sockaddr *) &other, 3);
     insert_sockaddr_id((struct sockaddr *) &test, 3);
     
