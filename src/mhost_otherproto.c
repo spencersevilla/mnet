@@ -67,7 +67,7 @@ int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr *s
     
     /* send down the stack! */
     /* NOTE: dst must be set if you want to use an actual interface! */
-    return mhost_finish_output(skb, dev, baddr);
+    return mhost_finish_output(skb, dev, daddr);
 };
 
 int other_mhost_rcv(struct sk_buff *skb, struct net_device *dev, 

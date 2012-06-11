@@ -33,12 +33,12 @@ int main(int argc, char**argv)
     retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&sm, sizeof(sm));
     printf("sendto AF_TESTPROTO returned: %d\n", retval);
     
-    sm.sin_family = AF_OTHERPROTO;
+    sm.sa_family = AF_OTHERPROTO;
     retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&sm, sizeof(sm));
     printf("sendto AF_OTHERPROTO returned: %d\n", retval);
     
     retval = close(sockfd);
     
     printf("close returned: %d\n", retval);
-    return 0;a
+    return 0;
 }
