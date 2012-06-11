@@ -28,7 +28,7 @@ int test_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr *sa
 {
     struct testhdr *hdr;
     struct net_device *dev = NULL;
-    char *daddr;
+    char *daddr = NULL;
     struct sockaddr_mhost *sm = (struct sockaddr_mhost *)sa;
     
     printk(KERN_INFO "test_mhost_sendmsg called\n");
