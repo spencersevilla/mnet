@@ -26,11 +26,11 @@ int mhost_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *p
     
     /* error-checking here */
     
-    skb->network_header = skb->data;
+    skb_set_network_header(skb, 0);
     
     /* address family MUST be first member of L3 header 
      * so that we can quickly perform a table lookup on it.*/
-    hdr = (struct l3_hdr *)(skb->network_header);
+    hdr = (struct l3_hdr *) skb_network_header(skb);
     mp = mhost_proto_for_family(hdr->family);
 
     /* ...and pass it up the stack! */
@@ -48,7 +48,7 @@ int mhost_local_deliver(struct sk_buff *skb)
     printk(KERN_INFO "mhost_local_deliver called\n");
     
     /* update this pointer */
-    skb->transport_header = skb->data;
+    skb_set_transport_header(skb, 0);
 
     /* logic here to determine appropriate L4 handler */
     
@@ -69,7 +69,7 @@ int udp_mhost_rcv(struct sk_buff *skb)
 //    if (!pskb_may_pull(skb, sizeof(struct udphdr)))
 //        goto drop;
 
-    uh = (struct udphdr *) skb->transport_header;
+    uh = (struct udphdr *) skb_transport_header(skb);
     ulen = ntohs(uh->len);
     
     // eh?

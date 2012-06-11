@@ -78,7 +78,7 @@ int test_mhost_rcv(struct sk_buff *skb, struct net_device *dev,
     
     /* preserve network_header location */
     skb_pull(skb, sizeof(struct testhdr));
-    hdr = (struct testhdr *) skb->network_header;
+    hdr = (struct testhdr *) skb_network_header(skb);
     
     if (hdr->ones != 0xFFFF) {
         printk(KERN_INFO "error: hdr->ones not all ones!\n");

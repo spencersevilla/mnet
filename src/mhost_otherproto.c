@@ -57,7 +57,6 @@ int other_mhost_sendmsg(struct sock *sk, struct sk_buff *skb, struct sockaddr *s
         }
     }
 
-    
     /* build header */
     hdr = (struct otherhdr *)skb_push(skb, sizeof(struct otherhdr));
     hdr->family = AF_OTHERPROTO;
@@ -79,7 +78,7 @@ int other_mhost_rcv(struct sk_buff *skb, struct net_device *dev,
     
     /* preserve network_header location */
     skb_pull(skb, sizeof(struct otherhdr));
-    hdr = (struct otherhdr *) skb->network_header;
+    hdr = (struct otherhdr *) skb_network_header(skb);
     
     if (hdr->zeroes != 0x0000) {
         printk(KERN_INFO "error: hdr->ones not all ones!\n");
