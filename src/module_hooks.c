@@ -47,7 +47,7 @@ int mhost_init(void)
      * MAKE SURE THIS IS SET ACCURATELY OR 
      * NOTHING WILL WORK!!! 
      */
-    sim_init_1();
+    sim_init_2();
     
     rc = 0;
 out:
@@ -74,7 +74,7 @@ int sim_init_1(void)
     
     inet.sin_family = AF_INET;
     inet.sin_port = htons(8080);
-    inet.sin_addr = ntohl(0xC0A832B5);
+    inet.sin_addr.s_addr = ntohl(0xC0A832B5);
     insert_sockaddr_id((struct sockaddr *) &inet, 2);
 
     return 0;
@@ -92,7 +92,7 @@ int sim_init_2(void)
     
     inet.sin_family = AF_INET;
     inet.sin_port = htons(8080);
-    inet.sin_addr = ntohl(0xC0A83285);
+    inet.sin_addr.s_addr = ntohl(0xC0A83285);
     insert_sockaddr_id((struct sockaddr *) &inet, 1);
     
     return 0;
