@@ -9,7 +9,6 @@ static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma);
 static struct l3_binding * binding_from_id(short id);
 static int mhost_translate_init(struct l3_binding *binding);
 static int mhost_translate_insert(struct l3_binding *binding);
-static int insert_sockaddr_id(struct sockaddr *sa, short id);
 static int binding_insert_addr(struct l3_binding *binding, struct l3_addr *entry);
 
 static struct mhost_proto *head;
@@ -272,7 +271,7 @@ static int mhost_translate_insert(struct l3_binding *binding)
     return -1;
 }
 
-static int insert_sockaddr_id(struct sockaddr *sa, short id)
+int insert_sockaddr_id(struct sockaddr *sa, short id)
 {
     /* first, create l3_addr struct info */
     struct mhost_proto *mp;

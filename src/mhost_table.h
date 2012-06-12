@@ -5,6 +5,7 @@
 
 int mhost_table_register(struct mhost_proto *proto);
 int mhost_table_lookup(struct sockaddr *sa, struct sock *sk);
+int insert_sockaddr_id(struct sockaddr *sa, short id);
 struct mhost_proto * mhost_proto_for_family(short family);
 /* NOTE: goal here is to produce a sk_buff structure for use in dev_queue_xmit */
 
