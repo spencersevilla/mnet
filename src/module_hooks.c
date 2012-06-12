@@ -7,6 +7,10 @@
 #include "mhost_otherproto.h"
 #include "kernel_includes.h"
 
+int sim_init_1(void);
+int sim_init_2(void);
+int sim_init_3(void);
+
 int init_module(void)
 {
     int retval;
@@ -39,12 +43,75 @@ int mhost_init(void)
     test_mhost_init();
     other_mhost_init();
     
-    /* this function populates a-priori knowledge of rts */
-    table_sim_init();
+    /* startup routes for demo! 
+     * MAKE SURE THIS IS SET ACCURATELY OR 
+     * NOTHING WILL WORK!!! 
+     */
+    sim_init_1();
     
     rc = 0;
 out:
     return rc;
 };
+
+/* my hardcoded a-priori knowledge for demo!
+ * computer "1" only does AF_TESTPROTO and INET
+ * computer "2" only does AF_OTHERPROTO and INET
+ * computer "3" does both! 
+ * note that i'm using sockaddr_mhost just so that
+ * i can enter in a port number here without any problems
+ */
+
+int sim_init_1(void)
+{    
+    struct sockaddr_mhost test;
+    struct sockaddr_in inet;
+        
+    test.sa_family = AF_TESTPROTO;
+    test.port = htons(8080);
+    test.id_no = 3;
+    insert_sockaddr_id((struct sockaddr *) &test, 3);
+    
+    inet.sin_family = AF_INET;
+    inet.sin_port = htons(8080);
+    inet_pton(AF_INET, "10.0.0.1", &inet.sin_addr);
+    insert_sockaddr_id((struct sockaddr *) &inet, 2);
+
+    return 0;
+}
+
+int sim_init_2(void)
+{    
+    struct sockaddr_mhost test;
+    struct sockaddr_in inet;
+    
+    test.sa_family = AF_OTHERPROTO;
+    test.port = htons(8080);
+    test.id_no = 3;
+    insert_sockaddr_id((struct sockaddr *) &test, 3);
+    
+    inet.sin_family = AF_INET;
+    inet.sin_port = htons(8080);
+    inet_pton(AF_INET, "10.0.0.1", &inet.sin_addr);
+    insert_sockaddr_id((struct sockaddr *) &inet, 1);
+    
+    return 0;
+}
+
+int sim_init_3(void)
+{    
+    struct sockaddr_mhost test;
+    
+    test.sa_family = AF_TESTPROTO;
+    test.port = htons(8080);
+    test.id_no = 1;
+    insert_sockaddr_id((struct sockaddr *) &test, 1);
+    
+    test.sa_family = AF_OTHERPROTO;
+    test.id_no = 2;
+    insert_sockaddr_id((struct sockaddr *) &test, 2);
+    
+    return 0;
+}
 
 MODULE_LICENSE("GPL");

@@ -328,35 +328,3 @@ static int binding_insert_addr(struct l3_binding *binding, struct l3_addr *entry
     entry->next = NULL;
     return 0;
 }
-
-/* my hardcoded a-priori knowledge for demo! */
-int table_sim_init()
-{
-    /* computer "1" only does AF_TESTPROTO
-     * computer "2" only does AF_OTHERPROTO
-     * computer "3" does both! 
-     * note that i'm using sockaddr_mhost just so that
-     * i can enter in a port number here without any problems
-     */
-
-    struct sockaddr_mhost test;
-    struct sockaddr_mhost other;
-    
-    test.sa_family = AF_TESTPROTO;
-    test.port = htons(8080);
-    other.sa_family = AF_OTHERPROTO;
-    other.port = htons(8080);
-
-    test.id_no = 1;    
-    insert_sockaddr_id((struct sockaddr *) &test, 1);
-
-    other.id_no = 2;    
-    insert_sockaddr_id((struct sockaddr *) &other, 2);
-    
-    test.id_no = 3;
-    other.id_no = 3;
-    insert_sockaddr_id((struct sockaddr *) &other, 3);
-    insert_sockaddr_id((struct sockaddr *) &test, 3);
-    
-    return 0;
-}
