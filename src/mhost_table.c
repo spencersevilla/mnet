@@ -4,7 +4,7 @@
 #include "mhost_otherproto.h"
 
 static int mhost_table_af_specified(struct sockaddr *sa, struct sock *sk);
-static int mhost_table_lookup(struct sockaddr *sa);
+static int mhost_table_lookup(struct sockaddr_mhost *sa);
 
 static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma);
 static struct l3_binding * binding_from_id(short id);
@@ -32,10 +32,6 @@ static struct l3_binding *table_head = NULL;
 /* entry function */
 int mhost_translate_sa(struct sockaddr *sa, struct sock *sk)
 {
-    struct mhost_sock *ms = mhost_sk(sk);
-    struct sockaddr_mhost *ma;
-    struct l3_addr *addr;
-    
     printk(KERN_INFO "called mhost_translate_sa\n");
     
     /* here we're given an AF_MHOST pointer so we translate it first */
