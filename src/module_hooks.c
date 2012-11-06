@@ -40,14 +40,14 @@ int mhost_init(void)
     
     /* my table functions here */
     mhost_table_register(&inet_mhost_proto);
-    test_mhost_init();
-    other_mhost_init();
+//    test_mhost_init();
+//    other_mhost_init();
     
     /* startup routes for demo! 
      * MAKE SURE THIS IS SET ACCURATELY OR 
      * NOTHING WILL WORK!!! 
      */
-    sim_init_2();
+//    sim_init_1();
     
     rc = 0;
 out:

@@ -175,9 +175,9 @@ int mhost_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, s
      * in the event of address-translation
      * (AF_MHOST -> AF_INET, for example).
      */
-    err = mhost_table_lookup(sa, sk);
+    err = mhost_translate_sa(sa, sk);
     if (err) {
-        printk(KERN_INFO "error: mhost_table_lookup\n");
+        printk(KERN_INFO "error: mhost_translate_sa\n");
         return err;
     }
     

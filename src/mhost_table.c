@@ -4,6 +4,7 @@
 #include "mhost_otherproto.h"
 
 static int mhost_table_af_specified(struct sockaddr *sa, struct sock *sk);
+static int mhost_table_lookup(struct sockaddr *sa);
 
 static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma);
 static struct l3_binding * binding_from_id(short id);
@@ -29,62 +30,40 @@ struct l3_binding {
 static struct l3_binding *table_head = NULL;
 
 /* entry function */
-int mhost_table_lookup(struct sockaddr *sa, struct sock *sk)
+int mhost_translate_sa(struct sockaddr *sa, struct sock *sk)
 {
     struct mhost_sock *ms = mhost_sk(sk);
     struct sockaddr_mhost *ma;
     struct l3_addr *addr;
     
-    printk(KERN_INFO "called mhost_table_lookup\n");
+    printk(KERN_INFO "called mhost_translate_sa\n");
     
-    /* we have no way of ID'ing what's in this sockaddr! */
-    if (sa->sa_family == AF_UNSPEC) {
-        printk(KERN_INFO "error: cannot read AF_UNSPEC\n");
+    /* here we're given an AF_MHOST pointer so we translate it first */
+    if (sa->sa_family == AF_MHOST) {
+        struct sockaddr *new_sa = mhost_table_lookup((struct sockaddr_mhost *) sa);
+        memcpy(sa, new_sa, sizeof(struct sockaddr));
+    }
+    
+    /* error-check the sa before we work with it... */
+    if (sa->sa_family == AF_MHOST || sa->sa_family == AF_UNSPEC) {
+        printk(KERN_INFO "error: mhost_translate_sa given a bad sockaddr\n");
         return -EAFNOSUPPORT;
     }
     
-    /* check if an AF (such as AF_INET) is specified explicitly */
-    if (sa->sa_family != AF_MHOST) {
-        return mhost_table_af_specified(sa, sk);
-    }
-    
-    /* here we're given an AF_MHOST addressing structure
-     * so we must translate the addressing information
-     * in addition to finding the right handler!
-     */
-    
-    /* step one: perform lookup on (and/or validate) AF_MHOST pointer.
-     * this must be fixed, but in the meanwhile we're using the AF_MHOST
-     * quantity as a unique identifier of a node.
-     */
-    ma = (struct sockaddr_mhost *) sa;
-    addr = translate_af_mhost(ma);
-    
-    
-    /* step two: perform any/all sanitation/validation checks and copy
-     * all necessary quantities over before returning.
-     */
-    if (!addr) {
-        printk(KERN_INFO "error: mhost node name not found!\n");
-        return -EAFNOSUPPORT;
-    }
+    /* this last call sets the proto function pointer */
+    return mhost_table_af_specified(sa, sk);
+};
 
-    /* go through the loop: if one l3_addr doesn't have sufficient information,
-     * then see if we can find a suitable alternative. If none exist, return bad
+struct sockaddr * mhost_table_lookup(struct sockaddr_mhost *sa) {
+    /*  MIKE:
+     *  Currently, this function is completely empty... it's your main
+     *  entry-point for the table. your input is a sockaddr_mhost structure
+     *  which has fields for sa_family (set to AF_MHOST), port, and an id number.
+     *  The id number should be demuxed, do whatever you want with it,
+     *  and return a struct sockaddr containing the appropriate address.
      */
-    while (addr->mp == NULL) {
-        addr = addr->next;
-        if (!addr) {
-            printk(KERN_INFO "error: no acceptable l3_addr struct!\n");
-            return -EAFNOSUPPORT;
-        }
-    }
     
-    /* so: if we get here, we've got all the info we need for translation! */
-    ms->proto = addr->mp;
-    memcpy(sa, &addr->addr, sizeof(struct sockaddr));
-    
-    return 0;
+    return (struct sockaddr *) sa;
 };
 
 /*  here, we know that an address family has been explicitly named
@@ -189,9 +168,10 @@ int mhost_table_register(struct mhost_proto *proto)
     return -1;
 }
 
-/* here the following functions all branch from translate_af_mhost
- * which is the major entry-point for returning a coherent l3_addr
- * structure! this is the meat of what AF_MHOST is meant to do.
+/* MIKE: The following functions might be useful to you. I don't think they're hooked-up to anything,
+ * nor do I remember exactly what I was doing with them, but I'm pretty sure they were meant to work with
+ * the table. Take a look at the structs l3_binding and l3_addr... I think I was using them to make a linked
+ * list? Again, not 100% what I was doing here but they might help you out. 
  */
 static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma)
 {
