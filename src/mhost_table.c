@@ -4,7 +4,7 @@
 #include "mhost_otherproto.h"
 
 static int mhost_table_af_specified(struct sockaddr *sa, struct sock *sk);
-static int mhost_table_lookup(struct sockaddr_mhost *sa);
+struct sockaddr * mhost_table_lookup(struct sockaddr_mhost *sa);
 
 static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma);
 static struct l3_binding * binding_from_id(short id);
