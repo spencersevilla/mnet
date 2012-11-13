@@ -3,8 +3,6 @@
 #include "mhost_table.h"
 #include "mhost_inet.h"
 #include "mhost_upstack.h"
-#include "mhost_testproto.h"
-#include "mhost_otherproto.h"
 #include "kernel_includes.h"
 
 int sim_init_1(void);
@@ -62,6 +60,7 @@ out:
  * i can enter in a port number here without any problems
  */
 
+/*
 int sim_init_1(void)
 {    
     struct sockaddr_mhost test;
@@ -113,5 +112,6 @@ int sim_init_3(void)
     
     return 0;
 }
+*/
 
 MODULE_LICENSE("GPL");
