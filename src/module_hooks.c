@@ -1,13 +1,13 @@
-#include "af_mhost.h"
-#include "udp_mhost.h"
-#include "mhost_table.h"
-#include "mhost_inet.h"
-#include "mhost_upstack.h"
 #include "kernel_includes.h"
+#include "mhost_defs.h"
+#include "mhost_structs.h"
+
+#include "mhost_table.h"
 
 int sim_init_1(void);
 int sim_init_2(void);
 int sim_init_3(void);
+int mhost_init(void);
 
 int init_module(void)
 {

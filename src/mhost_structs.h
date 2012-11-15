@@ -53,7 +53,17 @@ struct udp_mhost_sock {
 extern const struct net_proto_family mhost_family_ops;
 extern const struct proto_ops mhost_dgram_ops;
 
+/* defined in mhost_inet.c */
+extern struct mhost_proto inet_mhost_proto;
+extern struct sockaddr_in test_sa;
 
+/* defined in mhost_upstack.c */
+extern struct packet_type mhost_ptype;
+
+/* defined in udp_mhost.c */
+extern struct proto udpmhost_prot;
+extern struct inet_protosw mhost_dgram_protosw;
+extern struct inet_protosw fake_dgram_protosw;
 
 /* STRUCT CASTING FUNCTIONS ============================= */
 static inline struct mhost_sock * mhost_sk_generic(struct sock *sk)

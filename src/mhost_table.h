@@ -1,7 +1,9 @@
 #ifndef _MHOST_TABLE_H
 #define _MHOST_TABLE_H
 
-#include "af_mhost.h"
+#include "kernel_includes.h"
+#include "mhost_defs.h"
+#include "mhost_structs.h"
 
 int mhost_table_register(struct mhost_proto *proto);
 int mhost_translate_sa(struct sockaddr *sa, struct sock *sk);
