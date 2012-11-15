@@ -4,7 +4,6 @@
 #include "kernel_includes.h"
 #include "mhost_defs.h"
 #include "mhost_structs.h"
-#include "af_mhost.h"
 
 extern struct proto udpmhost_prot;
 extern struct inet_protosw mhost_dgram_protosw;

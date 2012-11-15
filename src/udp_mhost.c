@@ -3,9 +3,6 @@
 #include "mhost_table.h"
 #include "udp_table.h"
 
-extern const struct net_proto_family mhost_family_ops;
-extern const struct proto_ops mhost_dgram_ops;
-
 /* udp_prot */
 struct proto udpmhost_prot = {
     .name           = "UDPMHOST",
