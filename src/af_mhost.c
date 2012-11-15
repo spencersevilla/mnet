@@ -8,8 +8,6 @@
 #include "mhost_structs.h"
 #include "mhost_funcs.h"
 
-#include "udp_table.h"
-
 int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
 {
 	struct sock *sk;

@@ -1,5 +1,4 @@
 #include "mhost_l3_wrapper.h"
-#include "udp_table.h"
 
 struct packet_type mhost_ptype = {
     .type = cpu_to_be16(ETH_P_MHOST),

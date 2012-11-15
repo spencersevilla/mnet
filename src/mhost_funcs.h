@@ -28,6 +28,11 @@ int udpmhost_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, si
 int udp_mhost_get_port(struct sock *sk, unsigned short snum);
 int udp_mhost_rcv(struct sk_buff *skb);
 
+/* defined in udp_table.c */
+int udp_table_insert(struct sock *sk, int port);
+int udp_table_remove(struct sock *sk);
+struct sock * udp_table_lookup(int port);
+
 /* in net/ipv4/udp_impl.h */
 void udp_destroy_sock(struct sock *sk);
 unsigned int udp4_portaddr_hash(struct net *net, __be32 saddr, unsigned int port);

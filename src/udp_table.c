@@ -1,4 +1,7 @@
-#include "udp_table.h"
+#include "kernel_includes.h"
+#include "mhost_defs.h"
+#include "mhost_structs.h"
+#include "mhost_funcs.h"
 
 struct udp_table_entry {
     int port;

@@ -3,8 +3,6 @@
 #include "mhost_structs.h"
 #include "mhost_funcs.h"
 
-#include "udp_table.h"
-
 int udpmhost_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, size_t len)
 {
     struct mhost_sock *ms = mhost_sk(sk);
