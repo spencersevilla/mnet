@@ -6,10 +6,6 @@
 #include "mhost_structs.h"
 #include "mhost_funcs.h"
 
-extern struct proto udpmhost_prot;
-extern struct inet_protosw mhost_dgram_protosw;
-extern struct inet_protosw fake_dgram_protosw;
-
 /* in net/ipv4/udp_impl.h */
 void udp_destroy_sock(struct sock *sk);
 unsigned int udp4_portaddr_hash(struct net *net, __be32 saddr, unsigned int port);
