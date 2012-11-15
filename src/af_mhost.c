@@ -3,7 +3,11 @@
  * functions before then getting passed to the L4 operators.
  */
 
-#include "af_mhost.h"
+#include "kernel_includes.h"
+#include "mhost_defs.h"
+#include "mhost_structs.h"
+#include "mhost_funcs.h"
+
 #include "udp_table.h"
 
 int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
