@@ -1,4 +1,3 @@
-#include "af_mhost.h"
 #include "udp_mhost.h"
 #include "udp_table.h"
 
