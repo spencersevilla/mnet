@@ -1,0 +1,19 @@
+MNET source is broken up as follows:
+
+mhost_defs.h contains all macro-definitions used throughout the LKM
+mhost_funcs.h contains all function declarations used in >1 file
+
+mhost_structs.h contains all struct definitions
+mhost_structs.c defines all structs used in multiple files
+
+module_hooks.c contains all the functions to load and unload the LKM.
+
+af_mhost.c contains all the functions necessary to interface with the Linux Network Stack. These are mainly wrapper-type functions, structs, etc. This file does NOT contain mhost-specific logic or a lot of complexity.
+
+udp_mhost.c contains all the UDP-specific logic related to mhost. I imagine when we get around to supporting TCP we will make another file in this same vein.
+
+mhost_l3_wrapper.* contains the functions necessary for another l3 protocol (such as AF_TESTPROTO) to be supported by mnet. It mainly covers sending packets to L2 and delivering packets to L3 and L4. These should be the only files that a l3 protocol needs to work with.
+
+mhost_table.* contains all the work and logic for the mhost table: This includes storing and demuxing multiple newtork addresses and protocols for a host identifier.
+
+test_protos contains two example files, AF_TESTPROTO and AF_OTHERPROTO, that would use mhost_l3_wrapper for mhost support.
