@@ -1,5 +1,4 @@
 #include "mhost_table.h"
-#include "mhost_inet.h"
 
 static int mhost_table_af_specified(struct sockaddr *sa, struct sock *sk);
 struct sockaddr * mhost_table_lookup(struct sockaddr_mhost *sa);

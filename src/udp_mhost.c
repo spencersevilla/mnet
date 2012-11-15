@@ -1,48 +1,6 @@
 #include "udp_mhost.h"
 #include "udp_table.h"
 
-/* udp_prot */
-struct proto udpmhost_prot = {
-    .name           = "UDPMHOST",
-    .owner          = THIS_MODULE,
-    .close          = udp_lib_close,
-    .destroy        = udp_destroy_sock,
-    .obj_size       = sizeof(struct udp_mhost_sock),
-    .slab_flags     = SLAB_DESTROY_BY_RCU,
-    .h.udp_table    = &udp_table,
-    /* huh? */
-    .hash           = udp_lib_hash,
-    .unhash         = udp_lib_unhash,
-    .memory_allocated  = &udp_memory_allocated,
-    .sysctl_mem        = sysctl_udp_mem,
-    
-    /* custom functions */
-    .sendmsg    = udpmhost_sendmsg,
-    .recvmsg    = udpmhost_recvmsg,
-    .get_port   = udp_mhost_get_port,
-};
-EXPORT_SYMBOL(udpmhost_prot);
-
-struct inet_protosw mhost_dgram_protosw = {
-    .type       = SOCK_DGRAM,
-    .protocol   = IPPROTO_UDP,
-    .prot       = &udpmhost_prot,
-    .ops        = &mhost_dgram_ops,
-    .no_check   = 0,
-    .flags      = 0,
-};
-
-struct inet_protosw fake_dgram_protosw = {
-    .type       = SOCK_DGRAM,
-    .protocol   = IPPROTO_UDP,
-    .prot       = &udp_prot,
-    .ops        = &inet_dgram_ops,
-    .no_check   = UDP_CSUM_DEFAULT,
-    .flags      = INET_PROTOSW_PERMANENT,
-};
-
-EXPORT_SYMBOL(mhost_dgram_protosw);
-
 int udpmhost_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, size_t len)
 {
     struct mhost_sock *ms = mhost_sk(sk);
