@@ -7,7 +7,6 @@
 //
 
 #include "mhost_inet.h"
-#include "udp_mhost.h"
 
 /* NOTE: this entry is for IP-layer compatibility */
 struct mhost_proto inet_mhost_proto = {

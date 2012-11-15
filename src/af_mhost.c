@@ -4,7 +4,6 @@
  */
 
 #include "af_mhost.h"
-#include "udp_mhost.h"
 #include "mhost_inet.h"
 #include "mhost_upstack.h"
 #include "udp_table.h"

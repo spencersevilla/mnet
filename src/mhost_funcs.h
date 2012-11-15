@@ -16,4 +16,7 @@ struct mhost_proto * mhost_proto_for_family(short family);
 /* defined in af_mhost.c */
 int mhost_rcv_saddr_equal(const struct sock *sk1, const struct sock *sk2);
 
+/* defined in udp_mhost.c */
+int udp_mhost_rcv(struct sk_buff *skb);
+
 #endif

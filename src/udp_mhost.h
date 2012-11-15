@@ -13,6 +13,5 @@ unsigned int udp4_portaddr_hash(struct net *net, __be32 saddr, unsigned int port
 int udpmhost_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, size_t len);
 int udpmhost_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, size_t len, int noblock, int flags, int *addr_len);
 int udp_mhost_get_port(struct sock *sk, unsigned short snum);
-int udp_mhost_rcv(struct sk_buff *skb);
 
 #endif /* _UDP_MHOST_H */
