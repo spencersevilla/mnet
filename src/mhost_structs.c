@@ -2,7 +2,10 @@
  * (that is, every struct declared in mhost_structs.h)
  */
 
+#include "kernel_includes.h"
+#include "mhost_defs.h"
 #include "mhost_structs.h"
+#include "mhost_funcs.h"
 
 /* taken from af_mhost.c ======================== */
 
