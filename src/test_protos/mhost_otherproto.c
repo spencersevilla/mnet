@@ -1,6 +1,5 @@
 #include "mhost_otherproto.h"
 #include "udp_mhost.h"
-#include "mhost_table.h"
 #include "mhost_upstack.h"
 #include "mhost_downstack.h"
 

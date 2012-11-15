@@ -1,5 +1,4 @@
 #include "mhost_upstack.h"
-#include "mhost_table.h"
 #include "udp_mhost.h"
 #include "udp_table.h"
 

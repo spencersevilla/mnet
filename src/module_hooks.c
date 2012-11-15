@@ -1,8 +1,7 @@
 #include "kernel_includes.h"
 #include "mhost_defs.h"
 #include "mhost_structs.h"
-
-#include "mhost_table.h"
+#include "mhost_funcs.h"
 
 int sim_init_1(void);
 int sim_init_2(void);

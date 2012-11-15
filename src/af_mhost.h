@@ -4,6 +4,7 @@
 #include "kernel_includes.h"
 #include "mhost_defs.h"
 #include "mhost_structs.h"
+#include "mhost_funcs.h"
 
 /* functions defined in af_mhost.c */
 int mhost_create(struct net *net, struct socket *sock, int protocol, int kern);
