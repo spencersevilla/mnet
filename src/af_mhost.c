@@ -4,40 +4,7 @@
  */
 
 #include "af_mhost.h"
-#include "mhost_inet.h"
 #include "udp_table.h"
-
-const struct net_proto_family mhost_family_ops = {
-	.family     = AF_MHOST,
-	.create     = mhost_create,
-    .owner      = THIS_MODULE,
-};
-EXPORT_SYMBOL(mhost_family_ops);
-
-/*  inet_dgram_ops 
- *  referenced by sock->ops
- */
-const struct proto_ops mhost_dgram_ops = {
-    .family         = AF_MHOST,
-    .owner          = THIS_MODULE,
-    .release        = mhost_release,
-    .bind           = mhost_bind,
-    .connect        = mhost_dgram_connect,
-    .socketpair     = sock_no_socketpair,
-    .accept         = sock_no_accept,
-    .getname        = mhost_getname,
-    .poll           = udp_poll,
-    .ioctl          = mhost_ioctl,
-    .listen         = sock_no_listen,
-    .shutdown       = mhost_shutdown,
-    .setsockopt     = sock_common_setsockopt,
-    .getsockopt     = sock_common_getsockopt,
-    .sendmsg        = mhost_sendmsg,
-    .recvmsg        = mhost_recvmsg,
-    .mmap           = sock_no_mmap,
-    .sendpage       = mhost_sendpage,
-};
-EXPORT_SYMBOL(mhost_dgram_ops);
 
 int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
 {
