@@ -5,7 +5,6 @@
 
 #include "af_mhost.h"
 #include "mhost_inet.h"
-#include "mhost_upstack.h"
 #include "udp_table.h"
 
 const struct net_proto_family mhost_family_ops = {

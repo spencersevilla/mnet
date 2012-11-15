@@ -1,6 +1,4 @@
 #include "mhost_otherproto.h"
-#include "mhost_upstack.h"
-#include "mhost_downstack.h"
 
 /* this should be only structure needed to interact with mhost */
 struct mhost_proto other_mhost_proto = {
