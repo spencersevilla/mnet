@@ -1,0 +1,16 @@
+#ifndef _MHOST_DEFS_H
+#define _MHOST_DEFS_H
+
+#include "kernel_includes.h"
+
+#define AF_MHOST 27
+
+#define ETH_P_MHOST 0x8888
+
+#define MHOST_HEADER_SIZE 48
+#define MHOST_MAX_HEADER MHOST_HEADER_SIZE + LL_MAX_HEADER
+
+#define UDP_HEADER_SIZE 4
+#define UDP_MAX_HEADER UDP_HEADER_SIZE + MHOST_MAX_HEADER
+
+#endif

@@ -2,61 +2,10 @@
 #define _AF_MHOST_H
 
 #include "kernel_includes.h"
+#include "mhost_defs.h"
+#include "mhost_structs.h"
 
-#define AF_MHOST 27
-
-#define MHOST_HEADER_SIZE 48
-#define MHOST_MAX_HEADER MHOST_HEADER_SIZE + LL_MAX_HEADER
-
-/* userspace exposed */
-struct sockaddr_mhost {
-    short           sa_family;
-    unsigned short  port;
-    unsigned short  id_no;
-    char            opaque[10];
-};
-
-/* kernel-level exposed */
-struct mhost_proto {
-    short family;
-    struct module *owner;
-    struct mhost_proto *next;
-    
-    /* IPv4/IPv6 hook-in wrapper */
-    int (*udp_sendmsg) (struct kiocb *iocb, struct sock *sk,
-                            struct msghdr *msg, size_t len);
-    int (*sendmsg) (struct sock *sk, struct sk_buff *skb, 
-                    struct sockaddr *sa, int len);
-    int (*rcv) (struct sk_buff *skb, struct net_device *dev, 
-                    struct net_device *orig_dev);
-};
-
-/* this field no longer has to contain sock, inet, etc.
- * because it resides at the VERY END of the data allocated!!!
- * (note that it's accessible via the pinet6 pointer in inet_sock)
- */
-struct mhost_sock {
-    struct mhost_proto *proto;
-};
-
-/* defined in af_mhost.c */
-extern const struct net_proto_family mhost_family_ops;
-extern const struct proto_ops mhost_dgram_ops;
-
-/* static functions */
-static inline struct mhost_sock * mhost_sk_generic(struct sock *sk)
-{
-    const int offset = sk->sk_prot->obj_size - sizeof(struct mhost_sock);
-    
-    return (struct mhost_sock *)(((u8 *)sk) + offset);
-}
-
-static inline struct mhost_sock * mhost_sk(const struct sock *sk)
-{
-    return (struct mhost_sock *) inet_sk(sk)->pinet6;
-}
-
-/* FUNCTIONS FUNCTIONS FUNCTIONS!!! */
+/* functions defined in af_mhost.c */
 int mhost_create(struct net *net, struct socket *sock, int protocol, int kern);
 int mhost_release(struct socket *sock);
 int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len);

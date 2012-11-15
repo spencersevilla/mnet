@@ -1,13 +1,5 @@
-//
-//  kernel_includes.h
-//  
-//
-//  Created by Spencer Sevilla on 5/8/12.
-//  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
-//
-
-#ifndef _kernel_includes_h
-#define _kernel_includes_h
+#ifndef _KERNEL_INCLUDES_H
+#define _KERNEL_INCLUDES_H
 
 #include <net/udp.h>
 #include <net/ip.h>

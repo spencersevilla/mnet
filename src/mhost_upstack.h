@@ -2,8 +2,7 @@
 #define _mhost_upstack_h
 
 #include "kernel_includes.h"
-
-#define ETH_P_MHOST 0x8888
+#include "mhost_defs.h"
 
 extern struct packet_type mhost_ptype;
 
