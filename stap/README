@@ -1,0 +1,5 @@
+STAP is a Linux utility for monitoring kernel activity/functions, similar to dtrace. These scripts are designed to give a much clearer understanding of what's going on inside the kernel network stack when certain functions are called. TO RUN THESE SCRIPTS:
+
+0. First, you must have the debug symbols installed for your kernel version. Get these symbols by running the script ./get-dbgsym.
+
+1. Next...
