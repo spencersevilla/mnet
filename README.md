@@ -5,7 +5,6 @@ LKM for supporting multiple network protocols simultaneously
 Currently developed for Linux 3.0.0
 
 
-====================================
 Installation and Initialization
 ====================================
 
@@ -18,9 +17,31 @@ This function registers:
 ...as well as our own, internal table type functions.
 
 
+Debugging Tools
 ====================================
-Packet Flow: App To MNET
+
+Printk()
+--------
+
+So, kernel debugging is a royal pain, there's no getting around it. The best recommendation I can make is to put printk()'s everywhere to figure out what's happening. You can see these printk()'s in /var/log/kern.log or by using dmesg, though personally I prefer tail -f on the logfile itself. This logfile persists across reboots and will dump a stacktrace if an error occurs in the code of the module itself. Thus, if your machine panics, a reboot followed by "tail /var/log/kern.log" will point you in the right direction.
+
+SystemTap
+----------
+
+Your other big debugging tool is system tap, a language designed to probe kernel functions without requiring kernel recompilation itself. Essentially, it is the Linux flavor of dtrace or ftrace, if you've used either of these utilities before. I have included some stap scripts (in /stap/) along with a more detailed readme file on how to use them.
+
+
+Testing
+========
+
+Sample C programs can be found in /tests/. make_tests.sh should compile all the programs fine. inet_client.c uses regular AF_INET sockets to send a string to localhost:8080, inet_server.c listens on this port and prints out strings received. mhost_client.c and mhost_server.c do the exact same thing, but using AF_MHOST sockets.
+
+
+Packet Flow
 ====================================
+
+App To MNET
+-----------
 
 After the module is installed, any one of the test programs may be run.
 
@@ -34,11 +55,10 @@ mhost_translate_sa() works by demuxing sa->sa_family to see what the application
 
 *** NOTE: I don't think I have found a way for AF_MNET sockets to bind to an address and RECEIVE IP packets. Maybe? Hmph.
 
-====================================
-Packet Flow: MNET To Wire
-====================================
+
+MNET To Wire
+------------
 
 *** In the cases of INET and INET6, ms->proto->udpsendmsg demuxes to udp_sendmsg
 
-==================
 udpmhost_sendmsg() starts by checking for ms->proto->udpsendmsg: if it provides a udp handler, just pass it along and wipe our hands of the whole damn thing! Note: this IS the case for all AF_INET and AF_INET6 addresses. If not, that means that whatever protocol we're using has elected to use OUR udp function instead, so we go through UDP functionality (explicitly NOT setting a cksum, since I couldn't figure out how :-p) and eventually we call ms->proto->sendmsg which delivers it to the appropriate L3 handler...
