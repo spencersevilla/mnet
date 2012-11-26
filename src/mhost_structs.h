@@ -56,6 +56,7 @@ extern const struct proto_ops mhost_dgram_ops;
 
 /* defined in mhost_inet.c */
 extern struct mhost_proto inet_mhost_proto;
+extern struct mhost_proto inet6_mhost_proto;
 extern struct sockaddr_in test_sa;
 
 /* defined in mhost_l3_wrapper.c */
