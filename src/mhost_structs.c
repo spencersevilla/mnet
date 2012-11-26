@@ -53,7 +53,7 @@ struct mhost_proto inet6_mhost_proto = {
     .family         = AF_INET6,
     .owner          = THIS_MODULE,
     .next           = NULL,
-    .udp_sendmsg    = udpv6_prot.sendmsg,
+    .udp_sendmsg    = NULL,
 };
 
 /* "test" sockaddr_in to 127.0.0.1:8080 */

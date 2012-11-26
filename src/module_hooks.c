@@ -35,6 +35,9 @@ int mhost_init(void)
 	sock_register(&mhost_family_ops);
     dev_add_pack(&mhost_ptype);
     
+    /* runtime hack because udpv6_sendmsg is not exported */
+    inet6_mhost_proto.udp_sendmsg = udpv6_prot.sendmsg;
+
     /* my table functions here */
     mhost_table_register(&inet_mhost_proto);
     mhost_table_register(&inet6_mhost_proto);
