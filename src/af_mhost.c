@@ -12,6 +12,7 @@ int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
 {
 	struct sock *sk;
     struct inet_sock *inet;
+    struct ipv6_pinfo *np;
 	struct inet_protosw *answer;
     int err;
     char answer_no_check;
@@ -63,10 +64,18 @@ int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
     sk->sk_family      = AF_MHOST;
     sk->sk_backlog_rcv = sk->sk_prot->backlog_rcv;
 
-    inet_sk(sk)->pinet6 = (struct ipv6_pinfo *) mhost_sk_generic(sk);
+    inet_sk(sk)->pinet6 = np = (struct ipv6_pinfo *) mhost_sk_generic(sk);
+
     
     /* HERE DO ALL MHOST-SPECIFIC INITS!!! */
     
+    /* now backwards-compat for IPv6 */
+    np->hop_limit   = -1;
+    np->mcast_hops  = IPV6_DEFAULT_MCASTHOPS;
+    np->mc_loop     = 1;
+    np->pmtudisc    = IPV6_PMTUDISC_WANT;
+    np->ipv6only    = net->ipv6.sysctl.bindv6only;
+
     /* now backwards-compat for IPv4 */
     inet->uc_ttl    = -1;
     

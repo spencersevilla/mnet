@@ -37,6 +37,7 @@ int mhost_init(void)
     
     /* my table functions here */
     mhost_table_register(&inet_mhost_proto);
+    mhost_table_register(&inet6_mhost_proto);
 //    test_mhost_init();
 //    other_mhost_init();
     

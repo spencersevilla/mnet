@@ -34,6 +34,7 @@ struct mhost_proto {
  * (note that it's accessible via the pinet6 pointer in inet_sock)
  */
 struct mhost_sock {
+    struct ipv6_pinfo ip6;
     struct mhost_proto *proto;
 };
 

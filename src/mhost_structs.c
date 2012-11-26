@@ -49,12 +49,26 @@ struct mhost_proto inet_mhost_proto = {
     .udp_sendmsg    = udp_sendmsg,
 };
 
-/* "test" sockaddr_in to 127.0.0.1:8080 (google.com) */
+struct mhost_proto inet6_mhost_proto = {
+    .family         = AF_INET6,
+    .owner          = THIS_MODULE,
+    .next           = NULL,
+    .udp_sendmsg    = udpv6_sendmsg,
+};
+
+/* "test" sockaddr_in to 127.0.0.1:8080 */
 struct sockaddr_in test_sa = {
     .sin_family = AF_INET,
     .sin_port   = 0x901F,
     .sin_addr   = {0x0100007F},
     .sin_zero   = {0x00},
+};
+
+/* "test" sockaddr_in6 to fe80::1:8080 */
+struct sockaddr_in6 test6_sa = {
+    .sin6_family    = AF_INET6,
+    .sin6_port      = 0x901F,
+    .sin6_addr      = {0x010000000000000000000000000080FE},
 };
 
 /* taken from udp_mhost.c ======================== */
