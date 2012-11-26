@@ -10,6 +10,8 @@
 #include <net/flow.h>
 #include <net/route.h>
 
+#include <net/transp_v6.h>
+
 #include <linux/ip.h>
 #include <linux/socket.h>
 #include <linux/udp.h>
