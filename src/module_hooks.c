@@ -35,8 +35,13 @@ int mhost_init(void)
 	sock_register(&mhost_family_ops);
     dev_add_pack(&mhost_ptype);
     
-    /* runtime hack because udpv6_sendmsg is not exported */
-    inet6_mhost_proto.udp_sendmsg = udpv6_prot.sendmsg;
+    /* runtime hack because udpv6_sendmsg is not exported!!! */
+    /* int sock_create_kern(int family, int type, int protocol, struct socket **res) */
+    struct socket* sock;
+    int res = sock_create_kern(AF_INET6, SOCK_DGRAM, IPPROTO_UDP, &sock);
+    struct proto* udpv6_prot = sock->sk->sk_prot;
+    inet6_mhost_proto.udp_sendmsg = udpv6_prot->sendmsg;
+    sock_release(sock);
 
     /* my table functions here */
     mhost_table_register(&inet_mhost_proto);
