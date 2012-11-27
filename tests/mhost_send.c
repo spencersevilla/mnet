@@ -35,7 +35,7 @@ int main(int argc, char**argv)
     sockfd = socket(AF_MHOST, SOCK_DGRAM, 0);
     printf("fd: %d\n", sockfd);
     
-    retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&addr, sizeof(addr));
+    retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&in6_addr, sizeof(in6_addr));
     printf("sendto AF_INET6 returned: %d\n", retval);
         
     retval = close(sockfd);

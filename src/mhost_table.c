@@ -70,7 +70,8 @@ static int mhost_table_af_specified(struct sockaddr *sa, struct sock *sk)
 {
     struct mhost_sock *ms = mhost_sk(sk);
     struct mhost_proto *mp;
-    
+    printk(KERN_INFO "mhost_table_af_specified \n");
+
     mp = mhost_proto_for_family(sa->sa_family);
     if (mp) {
         ms->proto = mp;
@@ -84,6 +85,7 @@ struct mhost_proto * mhost_proto_for_family(short family)
 {
     /* hard-coded for now, but we should really make this "head" */
     struct mhost_proto *answer = head;
+    printk(KERN_INFO "mhost_proto_for_family \n");
     while (answer) {
         if (family == answer->family) {
             break;
@@ -92,12 +94,14 @@ struct mhost_proto * mhost_proto_for_family(short family)
         /* went past it, so we don't have it */
         if (family < answer->family) {
             answer = NULL;
+            printk(KERN_INFO "error: mhost_proto_for_family \n");
             break;
         }
         
         /* no more protocols registered */
         if (answer->next == NULL) {
             answer = NULL;
+            printk(KERN_INFO "error: mhost_proto_for_family \n");
             break;
         }
         
