@@ -44,6 +44,7 @@ int mhost_init(void)
     res = sock_create_kern(AF_INET6, SOCK_DGRAM, IPPROTO_UDP, &sock);
     udpv6_prot = sock->sk->sk_prot;
     inet6_mhost_proto.udp_sendmsg = udpv6_prot->sendmsg;
+    udpmhost_prot.get_port = udpv6_prot->get_port;
     sock_release(sock);
 
     /* my table functions here */

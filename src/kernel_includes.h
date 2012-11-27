@@ -3,6 +3,7 @@
 
 #include <net/udp.h>
 #include <net/ip.h>
+#include <net/ipv6.h>
 #include <net/sock.h>
 #include <net/protocol.h>
 #include <net/inet_common.h>

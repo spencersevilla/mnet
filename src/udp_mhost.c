@@ -144,6 +144,9 @@ void udp_destroy_sock(struct sock *sk)
     unlock_sock_fast(sk, slow);
 };
 
+/*  THIS was my hacky re-write of udp_v4_get_port. It
+ *  actually makes sense to just call udp_v6_get_port.
+ */
 int udp_mhost_get_port(struct sock *sk, unsigned short snum)
 {
     int retval = 0;

@@ -173,6 +173,8 @@ int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
     unsigned short snum;
     struct sock *sk = sock->sk;
     struct inet_sock *inet = inet_sk(sk);
+    struct ipv6_pinfo *np = inet6_sk(sk);
+
     /* mhost not used yet */
 //    struct mhost_sock *mhost = mhost_sk(sk);
     struct sockaddr_mhost *sm;
@@ -231,18 +233,19 @@ int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
      * case for INADDR_ANY. they correspond to just that! */
     inet->inet_rcv_saddr = 0;
     inet->inet_saddr = 0;
-    
+    ipv6_addr_copy(&np->rcv_saddr, &addr->sin6_addr);
+    ipv6_addr_copy(&np->saddr, &addr->sin6_addr);
+
     /* inet transport layer binding here! */
     if (sk->sk_prot->get_port(sk, snum)) {
-        inet->inet_saddr = inet->inet_rcv_saddr = 0;
         printk(KERN_INFO "error: transport-layer bind failed\n");
+        inet_reset_saddr(sk);
         err = -EADDRINUSE;
         goto out;
     }
     
     if (snum)
         sk->sk_userlocks |= SOCK_BINDPORT_LOCK;
-    
     inet->inet_sport = htons(inet->inet_num);
     inet->inet_dport = 0;
     inet->inet_daddr = 0;
