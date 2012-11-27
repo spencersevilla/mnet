@@ -8,20 +8,20 @@
 int main(int argc, char**argv)
 {
     int sockfd, sockfd2, n, retval;
-    struct sockaddr_in servaddr,cliaddr;
+    struct sockaddr_in6 servaddr,cliaddr;
     socklen_t len;
     char mesg[1000];
-    char address[16] = "127.0.0.1";
-    char address2[16] = "192.168.1.102";
+    char address[16] = "::1";
     
-    sockfd = socket(AF_INET,SOCK_DGRAM,0);
+    sockfd = socket(AF_INET6,SOCK_DGRAM,0);
     if (!sockfd)
 	return 0;
 
     bzero(&servaddr,sizeof(servaddr));
-    servaddr.sin_family = AF_INET;
-    inet_pton(AF_INET, address, &(servaddr.sin_addr));
-    servaddr.sin_port=htons(8080);
+    servaddr.sin6_family = AF_INET6;
+//    inet_pton(AF_INET6, address, &(servaddr.sin6_addr));
+    servaddr.sin6_addr = in6addr_any;
+    servaddr.sin6_port=htons(8080);
     
     retval = bind(sockfd,(struct sockaddr *)&servaddr,sizeof(servaddr));
     if (retval)
