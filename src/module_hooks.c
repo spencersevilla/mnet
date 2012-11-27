@@ -23,6 +23,10 @@ void cleanup_module(void)
 
 int mhost_init(void)
 {
+    int res;
+    struct socket * sock;
+    struct proto * udpv6_prot;
+
     int rc = -EINVAL;
 	printk(KERN_INFO "initializing AF_MHOST family\n");
     
@@ -37,9 +41,8 @@ int mhost_init(void)
     
     /* runtime hack because udpv6_sendmsg is not exported!!! */
     /* int sock_create_kern(int family, int type, int protocol, struct socket **res) */
-    struct socket* sock;
-    int res = sock_create_kern(AF_INET6, SOCK_DGRAM, IPPROTO_UDP, &sock);
-    struct proto* udpv6_prot = sock->sk->sk_prot;
+    res = sock_create_kern(AF_INET6, SOCK_DGRAM, IPPROTO_UDP, &sock);
+    udpv6_prot = sock->sk->sk_prot;
     inet6_mhost_proto.udp_sendmsg = udpv6_prot->sendmsg;
     sock_release(sock);
 

@@ -13,6 +13,7 @@
 #include <net/transp_v6.h>
 
 #include <linux/ip.h>
+#include <linux/in6.h>
 #include <linux/socket.h>
 #include <linux/udp.h>
 #include <linux/jhash.h>

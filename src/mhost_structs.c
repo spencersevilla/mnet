@@ -68,7 +68,7 @@ struct sockaddr_in test_sa = {
 struct sockaddr_in6 test6_sa = {
     .sin6_family    = AF_INET6,
     .sin6_port      = 0x901F,
-    .sin6_addr      = {0x010000000000000000000000000080FE},
+    .sin6_addr      = IN6ADDR_LOOPBACK_INIT,
 };
 
 /* taken from udp_mhost.c ======================== */
