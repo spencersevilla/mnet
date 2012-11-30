@@ -50,6 +50,7 @@ struct udp_mhost_sock {
 
 /* STRUCTURES THAT ARE USED ACROSS FILES =============== */
 
+extern const struct in6_addr in6_any;
 /* defined in af_mhost.c */
 extern const struct net_proto_family mhost_family_ops;
 extern const struct proto_ops mhost_dgram_ops;

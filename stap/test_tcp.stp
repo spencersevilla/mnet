@@ -1,0 +1,31 @@
+#! /usr/bin/env stap
+
+function info_call() {
+	printf("%s -> %s\n", thread_indent(2), probefunc())
+}
+
+function info_ret(arg) {
+	printf("%s <- %s RETURNED: %s\n", thread_indent(-2), probefunc(), arg)
+}
+
+probe kernel.function("compute_score") { printf("%s -> compute_score\n", thread_indent(2)) 
+	printf("%s <- compute score\n", thread_indent(-2))
+}
+
+probe kernel.function("inet6_bind").call { info_call() }
+probe kernel.function("inet6_bind").return { info_ret($$return) }
+
+probe kernel.function("udp6_portaddr_hash").call { info_call() }
+probe kernel.function("udp6_portaddr_hash").return { info_ret($$return) }
+
+probe kernel.function("udp6_lib_lookup2").call { info_call() }
+probe kernel.function("udp6_lib_lookup2").return { info_ret($$return) }
+
+# probe kernel.function("__udp6_lib_rcv").call { info_call() }
+# probe kernel.function("__udp6_lib_rcv").return { info_ret($$return) }
+
+probe kernel.function("__udp6_lib_lookup").call { info_call() }
+probe kernel.function("__udp6_lib_lookup").return { info_ret($$return) }
+
+# probe kernel.function("ipv6_rcv").call { info_call() }
+# probe kernel.function("ipv6_rcv").return { info_ret($$return) }

@@ -7,6 +7,8 @@
 #include "mhost_structs.h"
 #include "mhost_funcs.h"
 
+const struct in6_addr in6_any = IN6ADDR_ANY_INIT;
+
 /* taken from af_mhost.c ======================== */
 
 const struct net_proto_family mhost_family_ops = {

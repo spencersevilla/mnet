@@ -1,0 +1,29 @@
+#! /usr/bin/env stap
+
+function info_call() {
+	printf("%s -> %s\n", thread_indent(2), probefunc())
+}
+
+function info_ret(retval) {
+	printf("%s <- %s %s\n", thread_indent(-2), probefunc(), retval)
+}
+
+probe kernel.function("inet6_bind").call { info_call() 
+	port = @cast($uaddr, "sockaddr_in6")->sin6_port
+	family = @cast($uaddr, "sockaddr_in6")->sin6_family
+#	i6_addr = @cast(@cast($uaddr, "sockaddr_in6")->sin6_addr, "in6_addr")
+#	addr_string = i6_addr->s6_addr
+#	printf("BIND: FAMILY:%d PORT: %d ADDR: %x\n", family, port, i6_addr)
+}
+probe kernel.function("inet6_bind").return { info_ret($$return) }
+
+probe kernel.function("udp_v6_get_port").call { info_call() }
+probe kernel.function("udp_v6_get_port").return { info_ret($$return) }
+
+probe kernel.function("udp6_portaddr_hash").call { info_call() }
+probe kernel.function("udp6_portaddr_hash").return { info_ret($$return) }
+
+probe kernel.function("udp_lib_get_port").call { info_call() 
+	printf("ARGS: %s\n", $$parms$$)
+}
+probe kernel.function("udp_lib_get_port").return { info_ret($$return) }

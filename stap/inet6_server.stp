@@ -1,83 +1,83 @@
 probe kernel.function("*@net/ipv6/af_inet6.c").call {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s -> %s\n", thread_indent(2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv6/af_inet6.c").return {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s <- %s\n", thread_indent(-2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv6/udp.c").call {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s -> %s\n", thread_indent(2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv6/udp.c").return {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s <- %s\n", thread_indent(-2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv4/udp.c").call {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s -> %s\n", thread_indent(2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv4/udp.c").return {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s <- %s\n", thread_indent(-2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv4/udp.c").call {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s -> %s\n", thread_indent(2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv4/udp.c").return {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s <- %s\n", thread_indent(-2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv4/ip_input.c").call {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s -> %s\n", thread_indent(2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv4/ip_input.c").return {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s <- %s\n", thread_indent(-2), probefunc())
     }
 }
 
 probe kernel.function("*@net/core/dev.c").call {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s -> %s\n", thread_indent(2), probefunc())
     }
 }
 
 probe kernel.function("*@net/core/dev.c").return {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s <- %s\n", thread_indent(-2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv4/route.c").call {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s -> %s\n", thread_indent(2), probefunc())
     }
 }
 
 probe kernel.function("*@net/ipv4/route.c").return {
-    if (execname() == "mhost_server.out") {
+    if (execname() == "inet6_server.out") {
         printf ("%s <- %s\n", thread_indent(-2), probefunc())
     }
 }

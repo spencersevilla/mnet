@@ -61,7 +61,7 @@ int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
 
     sk->sk_destruct    = inet_sock_destruct;
     sk->sk_protocol    = protocol;
-    sk->sk_family      = AF_MHOST;
+    sk->sk_family      = AF_INET6; /* HACK FOR RECEIVING UDP6!!! */
     sk->sk_backlog_rcv = sk->sk_prot->backlog_rcv;
 
     inet_sk(sk)->pinet6 = np = (struct ipv6_pinfo *) mhost_sk_generic(sk);
@@ -178,8 +178,15 @@ int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
     /* mhost not used yet */
 //    struct mhost_sock *mhost = mhost_sk(sk);
     struct sockaddr_mhost *sm;
-    
+    struct sockaddr_in6 addr;
+
     printk(KERN_INFO "mhost_bind called\n");
+    sm = (struct sockaddr_mhost *)sa;
+
+    addr.sin6_port = sm->port;
+    addr.sin6_family = AF_INET6;
+    addr.sin6_addr = in6_any;
+    return inet6_bind(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in6));
 
     /* If the socket has its own bind function then use it! (RAW) */
     if (sk->sk_prot->bind) {
@@ -210,9 +217,7 @@ int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
      * now, this is all we support so I'm just storing it all in my
      * own UDP table and cross-checking it with the af_inet one!
      */
-    
-    sm = (struct sockaddr_mhost *)sa;
-    
+        
     /* check port validity */
     snum = ntohs(sm->port);
     if (snum && snum < PROT_SOCK && !capable(CAP_NET_BIND_SERVICE)) {
@@ -233,8 +238,8 @@ int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
      * case for INADDR_ANY. they correspond to just that! */
     inet->inet_rcv_saddr = 0;
     inet->inet_saddr = 0;
-    ipv6_addr_copy(&np->rcv_saddr, &addr->sin6_addr);
-    ipv6_addr_copy(&np->saddr, &addr->sin6_addr);
+    ipv6_addr_copy(&np->rcv_saddr, &in6_any);
+    ipv6_addr_copy(&np->saddr, &in6_any);
 
     /* inet transport layer binding here! */
     if (sk->sk_prot->get_port(sk, snum)) {
