@@ -1,4 +1,4 @@
-#include "kernel_includes.h"
+c#include "kernel_includes.h"
 #include "mhost_defs.h"
 #include "mhost_structs.h"
 #include "mhost_funcs.h"
@@ -19,6 +19,10 @@ int init_module(void)
 void cleanup_module(void)
 {
 	printk(KERN_INFO "removing mobile_host module\n");
+    
+    proto_unregister(&udpmhost_prot);
+    sock_unregister(AF_MHOST);
+    dev_remove_pack(&mhost_ptype);
 }
 
 int mhost_init(void)
@@ -40,7 +44,6 @@ int mhost_init(void)
     dev_add_pack(&mhost_ptype);
     
     /* runtime hack because udpv6_sendmsg is not exported!!! */
-    /* int sock_create_kern(int family, int type, int protocol, struct socket **res) */
     res = sock_create_kern(AF_INET6, SOCK_DGRAM, IPPROTO_UDP, &sock);
     udpv6_prot = sock->sk->sk_prot;
     inet6_mhost_proto.udp_sendmsg = udpv6_prot->sendmsg;
