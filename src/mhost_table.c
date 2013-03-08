@@ -5,6 +5,7 @@ struct sockaddr * mhost_table_lookup(struct sockaddr_mhost *sa);
 
 static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma);
 static struct l3_binding * binding_from_id(short id);
+static struct sockaddr * addr_from_binding(struct l3_binding *binding);
 static int mhost_translate_init(struct l3_binding *binding);
 static int mhost_translate_insert(struct l3_binding *binding);
 static int binding_insert_addr(struct l3_binding *binding, struct l3_addr *entry);
@@ -15,7 +16,7 @@ static struct mhost_proto *head;
 struct l3_addr {
     struct l3_addr *next;   /* linked-list */
     struct mhost_proto *mp; /* has short family as first member! */
-    struct sockaddr addr;  /* l3-specific valid address */
+    struct sockaddr *addr;  /* l3-specific valid address */
 };
 
 struct l3_binding {
@@ -48,16 +49,43 @@ int mhost_translate_sa(struct sockaddr *sa, struct sock *sk)
 };
 
 struct sockaddr * mhost_table_lookup(struct sockaddr_mhost *sa) {
-    /*  MIKE:
+    /*  Kevin:
      *  Currently, this function is completely empty... it's your main
      *  entry-point for the table. your input is a sockaddr_mhost structure
      *  which has fields for sa_family (set to AF_MHOST), port, and an id number.
      *  The id number should be demuxed, do whatever you want with it,
      *  and return a struct sockaddr containing the appropriate address.
      */
-    
-    return (struct sockaddr *) sa;
+	//Added by KABAS (12-10-2012)
+        
+        //First we demux the sockaddr_mhost structure to its l3_addr list
+	struct l3_addr *first = translate_af_mhost(sa);
+        
+        /*
+	Since we're currently pointing to the first l3_addr structure
+        we then just pass the sockaddr it contains. In the future smarts
+        will be implemented here to correctly select a working l3_addr 
+	*/
+	struct sockaddr *answer = first->addr; 
+	
+	printk(KERN_INFO "Called mhost_table_lookup\n"); 
+        return answer;
 };
+
+// Added by MSEVILLA (12-10-2012)
+struct sockaddr * mhost_get_l3_head(int id) {
+	struct l3_binding *current_binding;
+	struct sockaddr_in *casted_ret;
+	struct sockaddr *ret;
+	current_binding = binding_from_id(id);
+
+	ret = addr_from_binding(current_binding);
+	casted_ret = (struct sockaddr_in *) ret;
+	printk(KERN_INFO "\n mhost_get_l3_head head port: %d\n", ntohs(casted_ret->sin_port));
+	printk(KERN_INFO "mhost_get_l3_head head addr: %d\n", htonl(casted_ret->sin_addr.s_addr));
+	//return addr_from_binding(current_binding);
+	return ret;
+}
 
 /*  here, we know that an address family has been explicitly named
  *  all to be done is to find the appropriate set of functions,
@@ -85,7 +113,8 @@ struct mhost_proto * mhost_proto_for_family(short family)
 {
     /* hard-coded for now, but we should really make this "head" */
     struct mhost_proto *answer = head;
-    printk(KERN_INFO "mhost_proto_for_family \n");
+    //printk(KERN_INFO "mhost_proto_for_family \n");
+
     while (answer) {
         if (family == answer->family) {
             break;
@@ -201,6 +230,24 @@ static struct l3_binding * binding_from_id(short id)
     return bind;
 }
 
+// Added by MSEVILLA (12-10-2012)
+static struct sockaddr * addr_from_binding(struct l3_binding *binding)
+{
+	struct l3_addr *address;
+	//struct sockaddr_in *ret;
+	printk(KERN_INFO "Printing out %d's addresses\n", binding->id);
+	for (address = binding->l3_head; address; address = address->next) {
+	    struct sockaddr_in *casted = (struct sockaddr_in *) &(address->addr);
+	    printk(KERN_INFO "\tport: %d\n", ntohs(casted->sin_port));
+	    printk(KERN_INFO "\taddr: %d\n", htonl(casted->sin_addr.s_addr));
+	}
+	
+	//ret = (struct sockaddr_in *) &(binding->l3_head->addr);
+	//printk(KERN_INFO "\taddr_from_binding head port: %d\n", ntohs(ret->sin_port));
+	//printk(KERN_INFO "\thead addr: %d\n", htonl(ret->sin_addr.s_addr));
+	
+	return (struct sockaddr *) &(binding->l3_head->addr);
+}
 static int mhost_translate_init(struct l3_binding *binding)
 {
     table_head = binding;
@@ -227,7 +274,6 @@ static int mhost_translate_insert(struct l3_binding *binding)
     
     do {
         nxt = ptr->next;
-        
         /* insert proto between ptr and nxt 
          * this code also works for when nxt is NULL (EOL)
          */
@@ -269,7 +315,6 @@ int insert_sockaddr_id(struct sockaddr *sa, short id)
     
     /* now check for an l3 binding, create one if none exist */
     binding = binding_from_id(id);
-    
     if (!binding) {
         /* create a suitable binding here! */
         printk(KERN_INFO "creating binding for id:%d\n", id);

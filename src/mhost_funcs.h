@@ -40,6 +40,7 @@ unsigned int udp4_portaddr_hash(struct net *net, __be32 saddr, unsigned int port
 /* defined in mhost_table.c */
 int mhost_translate_sa(struct sockaddr *sa, struct sock *sk);
 int mhost_table_register(struct mhost_proto *proto);
+struct sockaddr * mhost_get_l3_head(int id);
 int insert_sockaddr_id(struct sockaddr *sa, short id);
 struct mhost_proto * mhost_proto_for_family(short family);
 

@@ -24,4 +24,12 @@
 #include <linux/igmp.h>
 #include <linux/netdevice.h>
 
+/* 
+ * Added by MSEVILLA (12-9-2012)
+ * 	to get ioctl functionality
+ */
+#include <linux/init.h>
+#include <linux/fs.h>
+#include <linux/device.h>
+#include <asm/uaccess.h>
 #endif
