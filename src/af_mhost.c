@@ -8,7 +8,7 @@
 #include "mhost_structs.h"
 #include "mhost_funcs.h"
 
-int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
+int mhost_create(struct net *net, struct socket *sock, int protocol)
 {
 	struct sock *sk;
     struct inet_sock *inet;
@@ -28,7 +28,7 @@ int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
     /* end "big answer/protocol code mess" here */
     
     err = -EPERM;
-    if (sock->type == SOCK_RAW && !kern && !capable(CAP_NET_RAW))
+    if (sock->type == SOCK_RAW && !capable(CAP_NET_RAW))
         goto out;
 
     sock->ops = answer->ops;
@@ -54,7 +54,7 @@ int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
     inet->is_icsk = (INET_PROTOSW_ICSK & answer_flags) != 0;
     
     if (SOCK_RAW == sock->type) {
-        inet->inet_num = protocol;
+        inet->num = protocol;
         if (IPPROTO_RAW == protocol)
             inet->hdrincl = 1;
     }
@@ -100,12 +100,12 @@ int mhost_create(struct net *net, struct socket *sock, int protocol, int kern)
 
     sk_refcnt_debug_inc(sk);
     
-    if (inet->inet_num) {
+    if (inet->num) {
         /* assumes that any protocol which allows
          * the user to assign a number at socket
          * creation time automatically shares.
          */
-        inet->inet_sport = htons(inet->inet_num);
+        inet->sport = htons(inet->num);
         sk->sk_prot->hash(sk);
     }
 
@@ -124,9 +124,7 @@ int mhost_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, s
     struct sock *sk = sock->sk;
     int err = 0;
     struct sockaddr *sa = NULL;
-    
-    sock_rps_record_flow(sk);
-    
+        
     printk(KERN_INFO "mhost_sendmsg called\n");
     
     /* currently no support for TCP connected state:
@@ -157,8 +155,7 @@ int mhost_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, s
     }
     
     /* We may need to bind the socket */
-    if (!inet_sk(sk)->inet_num && !sk->sk_prot->no_autobind &&
-        mhost_autobind(sock)) {
+    if (!inet_sk(sk)->num && mhost_autobind(sock)) {
         printk(KERN_INFO "error: mhost_autobind\n");
         return -EAGAIN;
     }
@@ -228,7 +225,7 @@ int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
     lock_sock(sk);
 
     /* Check these errors (active socket, double bind). */
-    if (sk->sk_state != TCP_CLOSE || inet->inet_num) {
+    if (sk->sk_state != TCP_CLOSE || inet->num) {
         printk(KERN_INFO "error: active socket or double-bind\n");
         err = -EINVAL;
         goto out;
@@ -236,8 +233,8 @@ int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
         
     /* these settings are reminiscent to the inet6_bind 
      * case for INADDR_ANY. they correspond to just that! */
-    inet->inet_rcv_saddr = 0;
-    inet->inet_saddr = 0;
+    inet->rcv_saddr = 0;
+    inet->saddr = 0;
     ipv6_addr_copy(&np->rcv_saddr, &in6_any);
     ipv6_addr_copy(&np->saddr, &in6_any);
 
@@ -251,9 +248,9 @@ int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
     
     if (snum)
         sk->sk_userlocks |= SOCK_BINDPORT_LOCK;
-    inet->inet_sport = htons(inet->inet_num);
-    inet->inet_dport = 0;
-    inet->inet_daddr = 0;
+    inet->sport = htons(inet->num);
+    inet->dport = 0;
+    inet->daddr = 0;
     
 out:
     release_sock(sk);
@@ -270,7 +267,7 @@ int mhost_autobind(struct socket *sock)
     
     /* We may need to bind the socket. */
     inet = inet_sk(sk);   
-    if (!inet->inet_num) {
+    if (!inet->num) {
         return mhost_bind(sock, (struct sockaddr *)&sa, sizeof(struct sockaddr_mhost));
     }
     
@@ -283,9 +280,7 @@ int mhost_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, s
     int addr_len = 0;
     int err;
     printk(KERN_INFO "mhost_recvmsg called\n");
-    
-    sock_rps_record_flow(sk);
-    
+        
     err = sk->sk_prot->recvmsg(iocb, sk, msg, size, flags & MSG_DONTWAIT,
                                flags & ~MSG_DONTWAIT, &addr_len);
     if (err >= 0)
@@ -309,7 +304,7 @@ int mhost_dgram_connect(struct socket *sock, struct sockaddr * uaddr, int addr_l
      return sk->sk_prot->disconnect(sk, flags);
      */
     
-    if (!inet_sk(sk)->inet_num && mhost_autobind(sock)) {
+    if (!inet_sk(sk)->num && mhost_autobind(sock)) {
         printk(KERN_INFO "error: already bound\n");
         return -EAGAIN;
     }
@@ -376,9 +371,7 @@ ssize_t mhost_sendpage(struct socket *sock, struct page *page, int offset, size_
 {
     struct sock *sk = sock->sk;
     printk(KERN_INFO "mhost_sendpage called\n");
-    
-    sock_rps_record_flow(sk);
-        
+            
     if (sk->sk_prot->sendpage) {
         return sk->sk_prot->sendpage(sk, page, offset, size, flags);
     }
@@ -392,6 +385,6 @@ int mhost_rcv_saddr_equal(const struct sock *sk1, const struct sock *sk2)
     struct inet_sock *inet1 = inet_sk(sk1), *inet2 = inet_sk(sk2);
     
     return  (!ipv6_only_sock(sk2)  &&
-             (!inet1->inet_rcv_saddr || !inet2->inet_rcv_saddr ||
-              inet1->inet_rcv_saddr == inet2->inet_rcv_saddr));
+             (!inet1->rcv_saddr || !inet2->rcv_saddr ||
+              inet1->rcv_saddr == inet2->rcv_saddr));
 }

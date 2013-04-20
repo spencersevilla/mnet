@@ -8,7 +8,7 @@
 #include "mhost_structs.h"
 
 /* functions defined in af_mhost.c */
-int mhost_create(struct net *net, struct socket *sock, int protocol, int kern);
+int mhost_create(struct net *net, struct socket *sock, int protocol);
 int mhost_release(struct socket *sock);
 int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len);
 int mhost_dgram_connect(struct socket *sock, struct sockaddr * uaddr, int addr_len, int flags);

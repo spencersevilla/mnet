@@ -58,7 +58,7 @@ int udpmhost_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, si
     /* generate udp header here */
 	hdr = (struct udphdr *)skb_push(skb, sizeof(struct udphdr));
 
-    hdr->source = htons(inet->inet_sport);
+    hdr->source = htons(inet->sport);
     hdr->len = htons(ulen);
     hdr->dest = htons(dport);
     hdr->check = 0;
@@ -94,7 +94,6 @@ int udpmhost_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, si
     
     /* if (flags & MSG_ERRQUEUE) 
      * return mhost_recv_error(sk, msg, len) */
-    
     skb = __skb_recv_datagram(sk, flags | (noblock ? MSG_DONTWAIT : 0),
                               &peeked, &err);
     if (!skb)
@@ -117,8 +116,8 @@ int udpmhost_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, si
         UDP_INC_STATS_USER(sock_net(sk),
                            UDP_MIB_INDATAGRAMS, is_udplite);
     
-    sock_recv_ts_and_drops(msg, sk, skb);
-    
+    sock_recv_timestamp(msg, sk, skb);
+
     if (sin) {
         sin->sa_family = AF_MHOST;
         sin->port = udp_hdr(skb)->source;
@@ -139,9 +138,9 @@ out:
 
 void udp_destroy_sock(struct sock *sk)
 {
-    bool slow = lock_sock_fast(sk);
+    lock_sock(sk);
     udp_flush_pending_frames(sk);
-    unlock_sock_fast(sk, slow);
+    release_sock(sk);
 };
 
 /*  THIS was my hacky re-write of udp_v4_get_port. It
@@ -149,15 +148,9 @@ void udp_destroy_sock(struct sock *sk)
  */
 int udp_mhost_get_port(struct sock *sk, unsigned short snum)
 {
-    int retval = 0;
-    unsigned int hash2_nulladdr = udp4_portaddr_hash(sock_net(sk), htonl(INADDR_ANY), snum);
-    unsigned int hash2_partial = udp4_portaddr_hash(sock_net(sk), inet_sk(sk)->inet_rcv_saddr, 0);
-    
+    int retval = 0;    
     printk(KERN_INFO "udp_mhost_get_port called\n");
-
-    /* precompute partial secondary hash */
-    udp_sk(sk)->udp_portaddr_hash = hash2_partial;
-    retval = udp_lib_get_port(sk, snum, mhost_rcv_saddr_equal, hash2_nulladdr);
+    retval = udp_lib_get_port(sk, snum, mhost_rcv_saddr_equal);
 
     /* store udp port in a table! 
      * note that we use the original udp get port function
@@ -165,7 +158,7 @@ int udp_mhost_get_port(struct sock *sk, unsigned short snum)
      * reserved and valid for INET as well 
      */
     if (!retval) {
-        udp_table_insert(sk, inet_sk(sk)->inet_num);
+        udp_table_insert(sk, inet_sk(sk)->num);
     }
     
     return retval;
