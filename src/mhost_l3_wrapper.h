@@ -21,7 +21,7 @@ int mhost_local_deliver(struct sk_buff *skb);
 
 /* ??? */
 int mhost_gso_send_check(struct sk_buff *skb);
-struct sk_buff *mhost_gso_segment(struct sk_buff *skb, u32 features);
+struct sk_buff *mhost_gso_segment(struct sk_buff *skb, int features);
 struct sk_buff **mhost_gro_receive(struct sk_buff **head, struct sk_buff *skb);
 int mhost_gro_complete(struct sk_buff *skb);
 
