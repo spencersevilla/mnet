@@ -12,16 +12,20 @@ extern char baddr[6];
 extern char daddr1[6];
 extern char daddr2[6];
 
+/* symbols exported for use by L3 in other modules!!! */
+int mhost_send_to_l2(struct sk_buff *skb, struct net_device *dev, const void *daddr);
+int mhost_send_to_l4(struct sk_buff *skb);
+int mhost_register_proto(struct mhost_proto *proto);
+EXPORT_SYMBOL(mhost_send_to_l2);
+EXPORT_SYMBOL(mhost_send_to_l4);
+EXPORT_SYMBOL(mhost_register_proto);
+
 /* downstack */
 int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void *daddr);
 
 /* upstack */
 int mhost_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, struct net_device *orig_dev);
 int mhost_local_deliver(struct sk_buff *skb);
-
-EXPORT_SYMBOL(mhost_finish_output);
-EXPORT_SYMBOL(mhost_rcv);
-EXPORT_SYMBOL(mhost_local_deliver);
 
 /* ??? */
 int mhost_gso_send_check(struct sk_buff *skb);

@@ -22,6 +22,46 @@ char daddr2[6] = {0x20, 0x10, 0x7a, 0x0b, 0x48, 0x84};
 char daddr3[6] = {0x20, 0x10, 0x7a, 0x12, 0x85, 0x9a};
 /* (end remove) */
 
+/* FUNCTION WRAPPERS: THESE ARE THE ONLY FUNCS EXPORTED TO OTHER MODULES!!! */
+int mhost_send_to_l2(struct sk_buff *skb, struct net_device *dev, const void *daddr)
+{
+    if (skb == NULL) {
+        printk(KERN_INFO "mhost_send_to_l2 error: null skb!\n");
+        return -1;
+    }
+
+    if (dev == NULL) {
+        printk(KERN_INFO "mhost_send_to_l2 error: null dev!\n");
+        return -1;
+    }
+
+    if (daddr == NULL) {
+        printk(KERN_INFO "mhost_send_to_l2 error: null daddr!\n");
+        return -1;
+    }
+
+    return mhost_finish_output(skb, dev, daddr);
+};
+
+int mhost_send_to_l4(struct sk_buff *skb)
+{
+    if (skb == NULL) {
+        printk(KERN_INFO "mhost_send_to_l4 error: null skb!\n");
+        return -1;
+    }
+
+    return mhost_local_deliver(skb);
+}
+
+int mhost_register_proto(struct mhost_proto *proto) {
+    if (proto == NULL) {
+        printk(KERN_INFO "mhost_register_proto error: null proto!\n");
+        return -1;
+    }
+
+    return mhost_table_register(proto);
+}
+
 /* DOWNSTACK: MASTER FUNCTION CALLED BY L3
  * analagous to ip_output and ip_finish_output{2}
  * they then call the equivalent of neigh_connected_output
