@@ -19,6 +19,10 @@ int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void 
 int mhost_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *pt, struct net_device *orig_dev);
 int mhost_local_deliver(struct sk_buff *skb);
 
+EXPORT_SYMBOL(mhost_finish_output);
+EXPORT_SYMBOL(mhost_rcv);
+EXPORT_SYMBOL(mhost_local_deliver);
+
 /* ??? */
 int mhost_gso_send_check(struct sk_buff *skb);
 struct sk_buff *mhost_gso_segment(struct sk_buff *skb, int features);

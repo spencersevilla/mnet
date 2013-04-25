@@ -19,7 +19,7 @@ int main(int argc, char**argv)
     /* junk info here */
     inet_pton(AF_INET, "128.114.59.154", &servaddr.sin_addr);
     servaddr.sin_port = htons(8080);
-    servaddr.sin_family = AF_TESTPROTO;
+    servaddr.sin_family = AF_INET;
     
     inet_pton(AF_INET, "127.0.0.1", &servaddr.sin_addr);
     
@@ -27,11 +27,7 @@ int main(int argc, char**argv)
     printf("fd: %d\n", sockfd);
 
     retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
-    printf("sendto AF_TESTPROTO returned: %d\n", retval);
-
-    servaddr.sin_family = AF_OTHERPROTO;
-    retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
-    printf("sendto AF_OTHERPROTO returned: %d\n", retval);
+    printf("sendto AF_INET returned: %d\n", retval);
     
     retval = close(sockfd);
     
