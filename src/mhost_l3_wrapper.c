@@ -62,6 +62,16 @@ int mhost_register_proto(struct mhost_proto *proto) {
     return mhost_table_register(proto);
 }
 
+// struct net_device * mhost_get_devices() {
+//     read_lock(&dev_base_lock);
+//     dev = first_net_device(&init_net);
+//     while (dev) {
+//         printk(KERN_INFO "found [%s]\n", dev->name);
+//         dev = next_net_device(dev);
+//     }
+//     read_unlock(&dev_base_lock);
+// }
+
 /* DOWNSTACK: MASTER FUNCTION CALLED BY L3
  * analagous to ip_output and ip_finish_output{2}
  * they then call the equivalent of neigh_connected_output
