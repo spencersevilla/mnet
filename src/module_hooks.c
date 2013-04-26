@@ -85,15 +85,6 @@ int mhost_init(void)
     struct proto * udpv6_prot;
     struct net_device *dev;
 
-    // test code to create a list of net devices!!!
-    read_lock(&dev_base_lock);
-    dev = first_net_device(&init_net);
-    while (dev) {
-        printk(KERN_INFO "found [%s]\n", dev->name);
-        dev = next_net_device(dev);
-    }
-    read_unlock(&dev_base_lock);
-
     int rc = -EINVAL;
 	printk(KERN_INFO "initializing AF_MHOST family\n");
     
