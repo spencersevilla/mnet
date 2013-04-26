@@ -83,7 +83,6 @@ int mhost_init(void)
     int res;
     struct socket * sock;
     struct proto * udpv6_prot;
-    struct net_device *dev;
 
     int rc = -EINVAL;
 	printk(KERN_INFO "initializing AF_MHOST family\n");
