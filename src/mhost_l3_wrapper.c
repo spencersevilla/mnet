@@ -82,7 +82,7 @@ int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void 
 {
     int err = 0;
     
-    printk(KERN_INFO "mhost_finish_output called\n");
+    // printk(KERN_INFO "mhost_finish_output called\n");
     
     /* set device-specific header here... */
     skb->protocol = htons(ETH_P_MHOST);
@@ -111,7 +111,7 @@ int mhost_rcv(struct sk_buff *skb, struct net_device *dev, struct packet_type *p
     struct mhost_proto *mp;
     struct l3_hdr *hdr;
     
-    printk(KERN_INFO "mhost_rcv called\n");
+    // printk(KERN_INFO "mhost_rcv called\n");
     
     /* error-checking here */
     
@@ -185,7 +185,7 @@ int udp_mhost_rcv(struct sk_buff *skb)
     }
     
     /* no socket wants it, so drop silently */
-    printk(KERN_INFO "error: sk NULL!\n");
+    printk(KERN_INFO "mnet error: sk NULL!\n");
     kfree_skb(skb);
     return 0;
 }

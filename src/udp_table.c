@@ -17,6 +17,7 @@ static struct udp_table_entry * udp_table_get_entry_by_port(int port);
 /* lookup function */
 struct sock * udp_table_lookup(int port)
 {
+    printk(KERN_INFO "udp_table_lookup on portno %d", port);
     struct udp_table_entry *answer;
     answer = udp_table_get_entry_by_port(port);
 
@@ -42,6 +43,8 @@ int udp_table_insert(struct sock *sk, int port)
     struct udp_table_entry *nxt = NULL;
     struct udp_table_entry *entry;
     
+    printk(KERN_INFO "udp_table_insert portno %d", port);
+
     /* construct and prepare the entry */
     entry = kmalloc(sizeof(struct udp_table_entry), GFP_KERNEL);
     if (!entry) {
