@@ -208,7 +208,7 @@ int mhost_table_unregister(int family) {
     /* ptr stays one step behind for next-ing */
     ptr = head;
     nxt = head->next;
-    while (next != NULL) {
+    while (nxt != NULL) {
         if (family == nxt->family) {
             ptr->next = nxt->next;
             return 0;
