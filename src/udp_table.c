@@ -17,8 +17,8 @@ static struct udp_table_entry * udp_table_get_entry_by_port(int port);
 /* lookup function */
 struct sock * udp_table_lookup(int port)
 {
-    printk(KERN_INFO "udp_table_lookup on portno %d", port);
     struct udp_table_entry *answer;
+    printk(KERN_INFO "udp_table_lookup on portno %d", port);
     answer = udp_table_get_entry_by_port(port);
 
     if (answer) {
