@@ -62,6 +62,10 @@ int mhost_register_proto(struct mhost_proto *proto) {
     return mhost_table_register(proto);
 }
 
+int mhost_unregister_proto(int family) {
+    return mhost_table_unregister(family);
+}
+
 // struct net_device * mhost_get_devices() {
 //     read_lock(&dev_base_lock);
 //     dev = first_net_device(&init_net);

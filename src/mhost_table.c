@@ -195,8 +195,36 @@ int mhost_table_register(struct mhost_proto *proto)
 }
 
 int mhost_table_unregister(int family) {
-    printk(KERN_INFO "mnet error: mhost_table_unregister not written yet...");
-    return 0;
+    struct mhost_proto *ptr;
+    struct mhost_proto *nxt;
+
+    printk(KERN_INFO "mhost_proto_for_family removing family %d\n", family);
+
+    /* special-case where the head is the answer */
+    if (family == head->family) {
+        head = head->next;
+    }
+
+    /* ptr stays one step behind for next-ing */
+    ptr = head;
+    nxt = head->next;
+    while (next != NULL) {
+        if (family == nxt->family) {
+            ptr->next = nxt->next;
+            return 0;
+        }
+
+        /* went past it, so we don't have it */
+        if (family < nxt->family) {
+            return -1;
+        }
+
+        ptr = nxt;
+        nxt = nxt->next;
+    }
+
+    /* nxt = NULL means we went through the entire list! */
+    return -1;
 }
 
 /* MIKE: The following functions might be useful to you. I don't think they're hooked-up to anything,
