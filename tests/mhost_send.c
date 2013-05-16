@@ -6,14 +6,13 @@
 #include <string.h>
 
 #define AF_MHOST 27
-#define AF_TESTPROTO 1
-#define AF_OTHERPROTO 3
+#define AF_ADD 1
 
 struct sockaddr_mhost {
     short           sa_family;
     unsigned short  port;
-    unsigned short  id_no;
-    char            opaque[10];
+    unsigned int  id_no;
+    char            opaque[8];
 };
 
 int main(int argc, char**argv)
@@ -24,7 +23,7 @@ int main(int argc, char**argv)
     char sendline[] = "hello";
     
     /* info here */
-    addr.sa_family = AF_MHOST;
+    addr.sa_family = AF_ADD;
     addr.port = htons(8080);
     addr.id_no = 1;
 
@@ -35,8 +34,8 @@ int main(int argc, char**argv)
     sockfd = socket(AF_MHOST, SOCK_DGRAM, 0);
     printf("fd: %d\n", sockfd);
     
-    retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&in6_addr, sizeof(in6_addr));
-    printf("sendto AF_INET6 returned: %d\n", retval);
+    retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&addr, sizeof(addr));
+    printf("sendto AF_ADD returned: %d\n", retval);
         
     retval = close(sockfd);
     
