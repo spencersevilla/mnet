@@ -16,9 +16,11 @@ extern char daddr2[6];
 int mhost_send_to_l2(struct sk_buff *skb, struct net_device *dev, const void *daddr);
 int mhost_send_to_l4(struct sk_buff *skb);
 int mhost_register_proto(struct mhost_proto *proto);
+int mhost_unregister_proto(int family);
 EXPORT_SYMBOL(mhost_send_to_l2);
 EXPORT_SYMBOL(mhost_send_to_l4);
 EXPORT_SYMBOL(mhost_register_proto);
+EXPORT_SYMBOL(mhost_unregister_proto);
 
 /* downstack */
 int mhost_finish_output(struct sk_buff *skb, struct net_device *dev, const void *daddr);
