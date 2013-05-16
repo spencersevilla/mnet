@@ -194,6 +194,11 @@ int mhost_table_register(struct mhost_proto *proto)
     return -1;
 }
 
+int mhost_table_unregister(int family) {
+    printk(KERN_INFO "mnet error: mhost_table_unregister not written yet...");
+    return 0;
+}
+
 /* MIKE: The following functions might be useful to you. I don't think they're hooked-up to anything,
  * nor do I remember exactly what I was doing with them, but I'm pretty sure they were meant to work with
  * the table. Take a look at the structs l3_binding and l3_addr... I think I was using them to make a linked

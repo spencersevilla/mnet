@@ -183,7 +183,13 @@ int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
     addr.sin6_port = sm->port;
     addr.sin6_family = AF_INET6;
     addr.sin6_addr = in6_any;
-    return inet6_bind(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in6));
+    err = inet6_bind(sock, (struct sockaddr *)&addr, sizeof(struct sockaddr_in6));
+
+    if (!err) {
+        udp_table_insert(sk, inet_sk(sk)->num);
+    }
+
+    return err;
 
     /* If the socket has its own bind function then use it! (RAW) */
     if (sk->sk_prot->bind) {
