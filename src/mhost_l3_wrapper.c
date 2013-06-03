@@ -202,7 +202,7 @@ int mhost_gso_send_check(struct sk_buff *skb)
     return 0;
 }
 
-struct sk_buff *mhost_gso_segment(struct sk_buff *skb, int features)
+struct sk_buff *mhost_gso_segment(struct sk_buff *skb, u32 features)
 {
     printk(KERN_INFO "mhost_gso_segment called\n");
     return NULL;

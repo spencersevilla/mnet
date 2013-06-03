@@ -58,7 +58,7 @@ int udpmhost_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, si
     /* generate udp header here */
 	hdr = (struct udphdr *)skb_push(skb, sizeof(struct udphdr));
 
-    hdr->source = htons(inet->sport);
+    hdr->source = htons(inet->inet_sport);
     hdr->len = htons(ulen);
     hdr->dest = htons(dport);
     hdr->check = 0;
@@ -146,23 +146,25 @@ void udp_destroy_sock(struct sock *sk)
 /*  THIS was my hacky re-write of udp_v4_get_port. It
  *  actually makes sense to just call udp_v6_get_port.
  */
+/*
 int udp_mhost_get_port(struct sock *sk, unsigned short snum)
 {
     int retval = 0;    
     printk(KERN_INFO "udp_mhost_get_port called\n");
     retval = udp_lib_get_port(sk, snum, mhost_rcv_saddr_equal);
 
-    /* store udp port in a table! 
+     * store udp port in a table! 
      * note that we use the original udp get port function
      * so that we're guaranteed that all mhost ports are also
      * reserved and valid for INET as well 
-     */
+
     if (!retval) {
-        udp_table_insert(sk, inet_sk(sk)->num);
+        udp_table_insert(sk, inet_sk(sk)->inet_num);
     }
     
     return retval;
-}
+} 
+*/
 
 unsigned int udp4_portaddr_hash(struct net *net, __be32 saddr, unsigned int port)
 {

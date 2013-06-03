@@ -8,7 +8,7 @@
 #include "mhost_structs.h"
 
 /* functions defined in af_mhost.c */
-int mhost_create(struct net *net, struct socket *sock, int protocol);
+int mhost_create(struct net *net, struct socket *sock, int protocol, int kern);
 int mhost_release(struct socket *sock);
 int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len);
 int mhost_dgram_connect(struct socket *sock, struct sockaddr * uaddr, int addr_len, int flags);
@@ -25,7 +25,7 @@ int mhost_rcv_saddr_equal(const struct sock *sk1, const struct sock *sk2);
 /* defined in udp_mhost.c */
 int udpmhost_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, size_t len);
 int udpmhost_recvmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, size_t len, int noblock, int flags, int *addr_len);
-int udp_mhost_get_port(struct sock *sk, unsigned short snum);
+// int udp_mhost_get_port(struct sock *sk, unsigned short snum);
 int udp_mhost_rcv(struct sk_buff *skb);
 
 /* defined in udp_table.c */

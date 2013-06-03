@@ -93,7 +93,7 @@ struct proto udpmhost_prot = {
     /* custom functions */
     .sendmsg    = udpmhost_sendmsg,
     .recvmsg    = udpmhost_recvmsg,
-    .get_port   = udp_mhost_get_port,
+    .get_port   = NULL,
 };
 EXPORT_SYMBOL(udpmhost_prot);
 
