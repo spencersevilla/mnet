@@ -48,6 +48,51 @@ int mhost_translate_sa(struct sockaddr *sa, struct sock *sk)
     return mhost_table_af_specified(sa, sk);
 };
 
+/* OTHER entry function. old_sa is an MHOST sockaddr and sa is a bad address.
+ * The goal is to remove sa from the old_sa entry and then retranslate...
+ */
+mhost_remove_and_retranslate(struct sockaddr *old_sa, struct sockaddr *sa, struct sock *sk) {
+    int ret = 0;
+
+    if (sa->sa_family != AF_MHOST) {
+        printk(KERN_INFO "error: old_sa MUST be AF_MHOST\n");
+        return -EAFNOSUPPORT;
+    }
+
+    /* step 1: remove the offending sockaddr, sa */
+    ret = mhost_table_remove_addr((struct sockaddr_mhost *) old_sa, sa);
+    if (ret) {
+        return -EAFNOSUPPORT;
+    }
+
+    /* step 2: retranslate as usual */
+    return mhost_translate_sa(old_sa, sk);
+}
+
+int mhost_table_remove_addr(struct sockaddr_mhost *index, struct sockaddr *val) {
+    struct l3_addr *head = translate_af_mhost(index);
+    struct l3_addr *prev = head;
+    struct l3_addr *ptr = head->next;
+
+    if (val == head->addr) {
+        head = head->next;
+        return 0;
+    }
+
+    while (ptr != NULL) {
+        if (val == ptr->addr) {
+            prev->next = ptr->next;
+            return 0;
+        }
+        prev = ptr;
+        ptr = ptr->next;
+    }
+
+    /* got to end of list, this is a problem... */
+    printk(KERN_INFO "error: mhost_table_remove_addr couldnt find addr?\n");
+    return -1;
+}
+
 struct sockaddr * mhost_table_lookup(struct sockaddr_mhost *sa) {
     /*  Kevin:
      *  Currently, this function is completely empty... it's your main

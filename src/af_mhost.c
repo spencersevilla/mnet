@@ -124,6 +124,9 @@ int mhost_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, s
     struct sock *sk = sock->sk;
     int err = 0;
     struct sockaddr *sa = NULL;
+    struct sockaddr old_sa;
+    int is_mhost = 0;
+    int ret;
         
     printk(KERN_INFO "mhost_sendmsg called\n");
     
@@ -140,6 +143,12 @@ int mhost_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, s
     if (msg->msg_namelen < sizeof(*sa))
         return -EINVAL;
     
+    // need to remember table index if this is MHOST
+    if (sa->sa_family == AF_MHOST) {
+        is_mhost = 1;
+        memcpy(&old_sa, sa, sizeof(struct sockaddr));
+    }
+
     /* table lookup here to confirm that in fact
      * we DO have a L3 handler for this socket! 
      * note that all this function really does
@@ -161,7 +170,26 @@ int mhost_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, s
     }
     
     err = sk->sk_prot->sendmsg(iocb, sk, msg, size);
-    return err;
+
+    // only proceed if we started with a valid MHOST index
+    if (is_mhost == 0) {
+        return err;
+    }
+
+    ret = err;
+    while (ret == EHOSTUNREACH) {
+
+        err = mhost_remove_and_retranslate(&old_sa, sa, sk);
+        if (err) {
+            printk(KERN_INFO "error: mhost_remove_and_retranslate\n");
+            return ret;
+        }
+
+        // we retranslated to a different sa, so now try again...
+        ret = sk->sk_prot->sendmsg(iocb, sk, msg, size);
+    }
+
+    return ret;
 };
 
 int mhost_bind(struct socket *sock, struct sockaddr *sa, int addr_len)
