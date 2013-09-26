@@ -83,6 +83,7 @@ int mhost_init(void)
     int res;
     struct socket * sock;
     struct proto * udpv6_prot;
+    struct sockaddr_in lhost;
 
     int rc = -EINVAL;
 	printk(KERN_INFO "initializing AF_MHOST family\n");
@@ -106,6 +107,9 @@ int mhost_init(void)
     /* my table functions here */
     mhost_table_register(&inet_mhost_proto);
     mhost_table_register(&inet6_mhost_proto);
+
+    /* quick testing runtime hack*/
+    insert_sockaddr_id((struct sockaddr *)&test_sa, 1);
 
     /******************************************************************************* 
      * Added by MSEVILLA (12-9-2012)

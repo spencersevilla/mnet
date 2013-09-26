@@ -124,9 +124,7 @@ int mhost_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg, s
     struct sock *sk = sock->sk;
     int err = 0;
     struct sockaddr *sa = NULL;
-        
-    printk(KERN_INFO "mhost_sendmsg called\n");
-    
+            
     /* currently no support for TCP connected state:
     if (sk->sk_state != TCP_ESTABLISHED)
         return -EDESTADDRREQ;

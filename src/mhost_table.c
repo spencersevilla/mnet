@@ -30,14 +30,20 @@ static struct l3_binding *table_head = NULL;
 /* entry function */
 int mhost_translate_sa(struct sockaddr *sa, struct sock *sk)
 {
-    printk(KERN_INFO "called mhost_translate_sa\n");
-    
+    struct sockaddr_mhost *m;
+
     /* here we're given an AF_MHOST pointer so we translate it first */
     if (sa->sa_family == AF_MHOST) {
+        m = sa;
+        if (m->id_no == 1) {
+            memcpy(sa, &test_sa, sizeof(struct sockaddr_in));
+            return mhost_table_af_specified(sa, sk);
+        }
+
         struct sockaddr *new_sa = mhost_table_lookup((struct sockaddr_mhost *) sa);
         memcpy(sa, new_sa, sizeof(struct sockaddr));
     }
-    
+
     /* error-check the sa before we work with it... */
     if (sa->sa_family == AF_MHOST || sa->sa_family == AF_UNSPEC) {
         printk(KERN_INFO "error: mhost_translate_sa given a bad sockaddr\n");
@@ -68,8 +74,7 @@ struct sockaddr * mhost_table_lookup(struct sockaddr_mhost *sa) {
 	*/
 	struct sockaddr *answer = first->addr; 
 	
-	printk(KERN_INFO "Called mhost_table_lookup\n"); 
-        return answer;
+    return answer;
 };
 
 // Added by MSEVILLA (12-10-2012)
@@ -98,7 +103,6 @@ static int mhost_table_af_specified(struct sockaddr *sa, struct sock *sk)
 {
     struct mhost_sock *ms = mhost_sk(sk);
     struct mhost_proto *mp;
-    printk(KERN_INFO "mhost_table_af_specified \n");
 
     mp = mhost_proto_for_family(sa->sa_family);
     if (mp) {
@@ -241,13 +245,12 @@ static struct l3_addr * translate_af_mhost(struct sockaddr_mhost *ma)
      */
     struct l3_binding *bind;
     
-    printk(KERN_INFO "called translate_af_mhost\n");
-
     bind = binding_from_id(ma->id_no);
     if (bind) {
         return bind->l3_head;
     }
     
+    printk(KERN_INFO "error: returning null!!!");
     return NULL;
 }
 

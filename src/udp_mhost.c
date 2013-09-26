@@ -16,13 +16,10 @@ int udpmhost_sendmsg(struct kiocb *iocb, struct sock *sk, struct msghdr *msg, si
     int ulen = len + sizeof(struct udphdr);
     __be16 dport = 0;
     unsigned char *data;
-    
-    printk(KERN_INFO "udpmhost_sendmsg called\n");
-    
+        
     /* shortcut for the case where L3 interacts closely with L4 
      * NOTE: IPv4 and IPv6 both use this! */
     if (ms->proto->udp_sendmsg) {
-        printk(KERN_INFO "SMS: calling udp_sendmsg\n");
         err = ms->proto->udp_sendmsg(iocb, sk, msg, len);
         if (err != len) {
             printk(KERN_INFO "error: %d\n", err);

@@ -23,7 +23,7 @@ int main(int argc, char**argv)
     char sendline[] = "hello";
     
     /* info here */
-    addr.sa_family = AF_ADD;
+    addr.sa_family = AF_MHOST;
     addr.port = htons(8080);
     addr.id_no = 1;
 
@@ -35,7 +35,7 @@ int main(int argc, char**argv)
     printf("fd: %d\n", sockfd);
     
     retval = sendto(sockfd, sendline, strlen(sendline), 0, (struct sockaddr *)&addr, sizeof(addr));
-    printf("sendto AF_ADD returned: %d\n", retval);
+    printf("sendto AF_MHOST returned: %d\n", retval);
         
     retval = close(sockfd);
     
