@@ -91,6 +91,8 @@ void cleanup_module(void)
     proto_unregister(&udpmhost_prot);
     sock_unregister(AF_MHOST);
     dev_remove_pack(&mhost_ptype);
+
+    nf_unregister_hook(&nfho);
 }
 
 int mhost_init(void)
@@ -159,7 +161,7 @@ out:
 int ctable_init(void)
 {
     nfho.hook = hook_func;
-    nfho.hooknum = 1;
+    nfho.hooknum = NF_INET_LOCAL_OUT;
     nfho.pf = PF_INET;
     nfho.priority = NF_IP_PRI_FIRST;
     nf_register_hook(&nfho);
