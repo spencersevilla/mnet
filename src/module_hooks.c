@@ -4,10 +4,13 @@
 #include "mhost_funcs.h"
 #include "mnet_header.h"
 
+#include "contable.h"
+
 // int sim_init_1(void);
 // int sim_init_2(void);
 // int sim_init_3(void);
 int mhost_init(void);
+int ctable_init(void);
 int currentId = 0;
 
 /*******************************************************************************/
@@ -55,9 +58,20 @@ static struct file_operations fops={
 /*******************************************************************************/
 int init_module(void)
 {
-    int retval;
-    printk(KERN_INFO "adding mobile_host module\n");
+    int retval = 0;
 	retval = mhost_init();
+    if (retval != 0) {
+        printk(KERN_INFO "error: mhost_init\n");
+        return retval;
+    }
+
+    retval = ctable_init();
+    if (retval != 0) {
+        printk(KERN_INFO "error: ctable_init\n");
+        return retval;
+    }
+
+    printk(KERN_INFO "successfully added mobile_host module\n");
     return retval;
 }
 
@@ -140,5 +154,15 @@ int mhost_init(void)
 out:
     return rc;
 };
+
+int ctable_init(void)
+{
+    nfho.hook = hook_func;
+    nfho.hooknum = 1;
+    nfho.pf = PF_INET;
+    nfho.priority = NF_IP_PRI_FIRST;
+    nf_register_hook(&nfho);
+    return 0;
+}
 
 MODULE_LICENSE("GPL");
