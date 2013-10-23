@@ -6,6 +6,7 @@
 
 #include "contable.h"
 static struct nf_hook_ops nfho;
+static struct nf_hook_ops nfhi;
 
 // int sim_init_1(void);
 // int sim_init_2(void);
@@ -93,6 +94,7 @@ void cleanup_module(void)
     dev_remove_pack(&mhost_ptype);
 
     nf_unregister_hook(&nfho);
+    nf_unregister_hook(&nfhi);
 }
 
 int mhost_init(void)
@@ -160,12 +162,19 @@ out:
 
 int ctable_init(void)
 {
-    nfho.hook = hook_func;
+    int retval = 0;
+    nfho.hook = out_hook;
     nfho.hooknum = NF_INET_LOCAL_OUT;
     nfho.pf = PF_INET;
     nfho.priority = NF_IP_PRI_FIRST;
     nf_register_hook(&nfho);
-    return 0;
+
+    nfhi.hook = in_hook;
+    nfhi.hooknum = NF_INET_LOCAL_IN;
+    nfhi.pf = PF_INET;
+    nfhi.priority = NF_IP_PRI_FIRST;
+    retval = nf_register_hook(&nfhi);
+    return retval;
 }
 
 MODULE_LICENSE("GPL");
