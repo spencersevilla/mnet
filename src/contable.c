@@ -15,21 +15,22 @@ unsigned int out_hook(unsigned int hooknum, struct sk_buff *skb,
 	}
 
 	hostid = iph->daddr;
+
 	// table lookup function!!!
-	daddr = lookup_hostid(hostid);
+	if (hostid == 0x07080808) {
+		printk(KERN_INFO "NETFILTER OUT TO 8.8.8.8!!! \n");
 
-	// 0 means the address is a failure, so abort!
-	// daddr == hostid means we didn't get a table-hit
-	// anything else means we've got an address..!
-	if (daddr == 0) {
-		printk(KERN_INFO "contable error: invalid hostid %d", hostid);
-		return NF_DROP;
+		iph->daddr = 0x08080808;
+		ip_send_check(iph);
+
+		// disable csum for now...
+		uh = udp_hdr(skb);
+		uh->check = 0;
+//		csum = udp_csum(skb);
+//		uh->check = 
+		// might also have to update saddr and net_device???
 	}
-
-	iph->daddr = daddr;
-	ip_send_check(iph);
 	
-	// might also have to update saddr and net_device???
 	return NF_ACCEPT;
 }
 
@@ -62,13 +63,13 @@ unsigned int in_hook(unsigned int hooknum, struct sk_buff *skb,
 	return NF_ACCEPT;
 }
 
-unsigned int lookup_hostid(unsigned int hid) {
-	if (hid == 0x07080808) {
-		printk(KERN_INFO "NETFILTER OUT TO 8.8.8.8!!! \n");
-		return 0x08080808;
-	}
-	return hid;
-}
+// unsigned int lookup_hostid(unsigned int hid) {
+// 	if (hid == 0x07080808) {
+// 		printk(KERN_INFO "NETFILTER OUT TO 8.8.8.8!!! \n");
+// 		return 0x08080808;
+// 	}
+// 	return hid;
+// }
 
 unsigned int lookup_srcid(unsigned int sid) {
 	if (sid == 0x08080808) {
