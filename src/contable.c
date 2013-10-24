@@ -5,6 +5,7 @@ unsigned int out_hook(unsigned int hooknum, struct sk_buff *skb,
 			int (*okfn)(struct sk_buff *))
 {
 	struct iphdr *iph;
+	struct udphdr *uh;
 	unsigned int hostid;
 	unsigned int daddr;
 
@@ -26,6 +27,8 @@ unsigned int out_hook(unsigned int hooknum, struct sk_buff *skb,
 	}
 
 	iph->daddr = daddr;
+	ip_send_check(iph);
+	
 	// might also have to update saddr and net_device???
 	return NF_ACCEPT;
 }
@@ -60,8 +63,9 @@ unsigned int in_hook(unsigned int hooknum, struct sk_buff *skb,
 }
 
 unsigned int lookup_hostid(unsigned int hid) {
-	if (hid == 0x08080808) {
+	if (hid == 0x07080808) {
 		printk(KERN_INFO "NETFILTER OUT TO 8.8.8.8!!! \n");
+		return 0x08080808;
 	}
 	return hid;
 }
@@ -70,5 +74,5 @@ unsigned int lookup_srcid(unsigned int sid) {
 	if (sid == 0x08080808) {
 		printk(KERN_INFO "NETFILTER IN FROM 8.8.8.8!!! \n");
 	}
-	return sid;
+	return 0x07080808;
 }
