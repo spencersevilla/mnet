@@ -14,4 +14,6 @@ unsigned int in_hook(unsigned int hooknum, struct sk_buff *skb,
 			const struct net_device *in, const struct net_device *out,
 			int (*okfn)(struct sk_buff *));
 
+unsigned int lookup_hostid(unsigned int hid);
+unsigned int lookup_srcid(unsigned int sid);
 #endif
